@@ -1,0 +1,433 @@
+// DAM Africa Platform - Database Schema
+// Generator and datasource configuration
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USERS & AUTHENTICATION
+// ============================================================================
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum KYCStatus {
+  NOT_STARTED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id                String            @id @default(uuid())
+  email             String            @unique
+  phone             String            @unique
+  passwordHash      String            @map("password_hash")
+  name              String
+  dateOfBirth       DateTime?         @map("date_of_birth") @db.Date
+  address           String?           @db.Text
+  city              String?           @db.VarChar(100)
+  country           String            @default("Côte d'Ivoire") @db.VarChar(100)
+  profilePhotoUrl   String?           @map("profile_photo_url") @db.Text
+  status            UserStatus        @default(ACTIVE)
+  kycStatus         KYCStatus         @default(NOT_STARTED) @map("kyc_status")
+  creditScore       Int               @default(0) @map("credit_score")
+  creditRating      String?           @map("credit_rating") @db.Char(1)
+  lastLogin         DateTime?         @map("last_login")
+  emailVerified     Boolean           @default(false) @map("email_verified")
+  phoneVerified     Boolean           @default(false) @map("phone_verified")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  kycDocuments      KYCDocument[]
+  loans             Loan[]
+  payments          Payment[]
+  vehicleRentals    VehicleRental[]
+  creditHistory     CreditScoreHistory[]
+  notifications     Notification[]
+  activityLogs      ActivityLog[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([kycStatus])
+  @@index([creditScore])
+  @@map("users")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  LOAN_OFFICER
+  FINANCE
+  SUPPORT
+}
+
+enum AdminStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Admin {
+  id                String            @id @default(uuid())
+  email             String            @unique
+  passwordHash      String            @map("password_hash")
+  name              String
+  role              AdminRole
+  status            AdminStatus       @default(ACTIVE)
+  lastLogin         DateTime?         @map("last_login")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  kycReviews        KYCDocument[]     @relation("ReviewedBy")
+  loanApprovals     Loan[]            @relation("ApprovedBy")
+  activityLogs      ActivityLog[]
+
+  @@index([email])
+  @@index([role])
+  @@map("admins")
+}
+
+// ============================================================================
+// KYC DOCUMENTS
+// ============================================================================
+
+enum DocumentType {
+  ID_CARD
+  PASSPORT
+  DRIVERS_LICENSE
+  SELFIE
+  VEHICLE_REGISTRATION
+  PROOF_OF_ADDRESS
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model KYCDocument {
+  id                String            @id @default(uuid())
+  userId            String            @map("user_id")
+  documentType      DocumentType      @map("document_type")
+  documentNumber    String?           @map("document_number") @db.VarChar(100)
+  expiryDate        DateTime?         @map("expiry_date") @db.Date
+  frontImageUrl     String?           @map("front_image_url") @db.Text
+  backImageUrl      String?           @map("back_image_url") @db.Text
+  status            DocumentStatus    @default(PENDING)
+  rejectionReason   String?           @map("rejection_reason") @db.Text
+  reviewedById      String?           @map("reviewed_by_id")
+  reviewedAt        DateTime?         @map("reviewed_at")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy        Admin?            @relation("ReviewedBy", fields: [reviewedById], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([documentType])
+  @@map("kyc_documents")
+}
+
+// ============================================================================
+// LOANS
+// ============================================================================
+
+enum LoanStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ACTIVE
+  COMPLETED
+  DEFAULTED
+}
+
+model Loan {
+  id                String            @id @default(uuid())
+  userId            String            @map("user_id")
+  amount            Decimal           @db.Decimal(12, 2)
+  interestRate      Decimal           @map("interest_rate") @db.Decimal(5, 2)
+  termWeeks         Int               @map("term_weeks")
+  totalRepayment    Decimal           @map("total_repayment") @db.Decimal(12, 2)
+  weeklyPayment     Decimal           @map("weekly_payment") @db.Decimal(12, 2)
+  purpose           String?           @db.VarChar(200)
+  status            LoanStatus        @default(PENDING)
+  rejectionReason   String?           @map("rejection_reason") @db.Text
+  approvedById      String?           @map("approved_by_id")
+  approvedAt        DateTime?         @map("approved_at")
+  disbursedAt       DateTime?         @map("disbursed_at")
+  startDate         DateTime?         @map("start_date") @db.Date
+  endDate           DateTime?         @map("end_date") @db.Date
+  amountPaid        Decimal           @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  approvedBy        Admin?            @relation("ApprovedBy", fields: [approvedById], references: [id])
+  schedule          LoanSchedule[]
+  payments          Payment[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+  @@map("loans")
+}
+
+enum ScheduleStatus {
+  PENDING
+  PAID
+  PARTIAL
+  OVERDUE
+}
+
+model LoanSchedule {
+  id                String            @id @default(uuid())
+  loanId            String            @map("loan_id")
+  weekNumber        Int               @map("week_number")
+  dueDate           DateTime          @map("due_date") @db.Date
+  amountDue         Decimal           @map("amount_due") @db.Decimal(12, 2)
+  amountPaid        Decimal           @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  status            ScheduleStatus    @default(PENDING)
+  paidAt            DateTime?         @map("paid_at")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  loan              Loan              @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  payments          Payment[]
+
+  @@index([loanId])
+  @@index([dueDate])
+  @@index([status])
+  @@map("loan_schedule")
+}
+
+// ============================================================================
+// PAYMENTS
+// ============================================================================
+
+enum PaymentMethod {
+  WAVE
+  ORANGE_MONEY
+  MTN_MOMO
+  BANK_TRANSFER
+  CARD
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                String            @id @default(uuid())
+  userId            String            @map("user_id")
+  loanId            String            @map("loan_id")
+  scheduleId        String?           @map("schedule_id")
+  amount            Decimal           @db.Decimal(12, 2)
+  method            PaymentMethod
+  reference         String?           @db.VarChar(100)
+  status            PaymentStatus     @default(PENDING)
+  providerReference String?           @map("provider_reference") @db.VarChar(100)
+  providerResponse  Json?             @map("provider_response")
+  notes             String?           @db.Text
+  processedAt       DateTime?         @map("processed_at")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loan              Loan              @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  schedule          LoanSchedule?     @relation(fields: [scheduleId], references: [id])
+
+  @@index([userId])
+  @@index([loanId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("payments")
+}
+
+// ============================================================================
+// VEHICLES & RENTALS
+// ============================================================================
+
+enum VehicleStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  RETIRED
+}
+
+model Vehicle {
+  id                String            @id @default(uuid())
+  make              String            @db.VarChar(100)
+  model             String            @db.VarChar(100)
+  year              Int
+  licensePlate      String            @unique @map("license_plate") @db.VarChar(20)
+  color             String?           @db.VarChar(50)
+  vin               String?           @db.VarChar(50)
+  status            VehicleStatus     @default(AVAILABLE)
+  photoUrl          String?           @map("photo_url") @db.Text
+  purchasePrice     Decimal?          @map("purchase_price") @db.Decimal(12, 2)
+  currentValue      Decimal?          @map("current_value") @db.Decimal(12, 2)
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  rentals           VehicleRental[]
+
+  @@index([status])
+  @@index([licensePlate])
+  @@map("vehicles")
+}
+
+enum RentalStatus {
+  ACTIVE
+  COMPLETED
+  TERMINATED
+}
+
+model VehicleRental {
+  id                String            @id @default(uuid())
+  vehicleId         String            @map("vehicle_id")
+  userId            String            @map("user_id")
+  startDate         DateTime          @map("start_date") @db.Date
+  endDate           DateTime?         @map("end_date") @db.Date
+  weeklyRate        Decimal           @map("weekly_rate") @db.Decimal(12, 2)
+  status            RentalStatus      @default(ACTIVE)
+  returnNotes       String?           @map("return_notes") @db.Text
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  vehicle           Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([userId])
+  @@index([status])
+  @@map("vehicle_rentals")
+}
+
+// ============================================================================
+// CREDIT SCORING
+// ============================================================================
+
+model CreditScoreHistory {
+  id                String            @id @default(uuid())
+  userId            String            @map("user_id")
+  score             Int
+  rating            String            @db.Char(1)
+  changeReason      String?           @map("change_reason") @db.Text
+  paymentHistoryScore   Int?          @map("payment_history_score")
+  loanUtilizationScore  Int?          @map("loan_utilization_score")
+  accountAgeScore       Int?          @map("account_age_score")
+  drivingPerformanceScore Int?        @map("driving_performance_score")
+  kycCompletenessScore   Int?         @map("kyc_completeness_score")
+  createdAt         DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("credit_score_history")
+}
+
+// ============================================================================
+// NOTIFICATIONS
+// ============================================================================
+
+enum NotificationType {
+  PAYMENT_REMINDER
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  LOAN_APPROVED
+  LOAN_REJECTED
+  KYC_APPROVED
+  KYC_REJECTED
+  CREDIT_SCORE_UPDATED
+  SYSTEM
+}
+
+model Notification {
+  id                String            @id @default(uuid())
+  userId            String            @map("user_id")
+  type              NotificationType
+  title             String            @db.VarChar(255)
+  message           String            @db.Text
+  read              Boolean           @default(false)
+  metadata          Json?
+  createdAt         DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ============================================================================
+// SYSTEM SETTINGS & CONFIGURATIONS
+// ============================================================================
+
+model Setting {
+  key               String            @id @db.VarChar(100)
+  value             Json
+  description       String?           @db.Text
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+// ============================================================================
+// ACTIVITY LOGS
+// ============================================================================
+
+enum ActorType {
+  USER
+  ADMIN
+  SYSTEM
+}
+
+model ActivityLog {
+  id                String            @id @default(uuid())
+  actorType         ActorType         @map("actor_type")
+  actorId           String?           @map("actor_id")
+  action            String            @db.VarChar(100)
+  entityType        String?           @map("entity_type") @db.VarChar(50)
+  entityId          String?           @map("entity_id")
+  details           Json?
+  ipAddress         String?           @map("ip_address") @db.VarChar(45)
+  createdAt         DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  user              User?             @relation(fields: [actorId], references: [id])
+  admin             Admin?            @relation(fields: [actorId], references: [id])
+
+  @@index([actorType, actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("activity_logs")
+}

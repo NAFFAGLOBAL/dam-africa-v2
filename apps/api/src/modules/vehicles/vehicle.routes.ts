@@ -1,9 +1,11 @@
 import { Router } from 'express';
+import { authenticateUser } from '../../middleware/auth';
+import { sendSuccess } from '../../utils/response';
+
 const router = Router();
 
-// Placeholder - Will be implemented
-router.get('/', (req, res) => {
-  res.json({ message: 'Vehicles module - Coming soon' });
+router.get('/', authenticateUser, async (req, res) => {
+  sendSuccess(res, [], 'Vehicles module - Coming in Phase 2');
 });
 
 export default router;

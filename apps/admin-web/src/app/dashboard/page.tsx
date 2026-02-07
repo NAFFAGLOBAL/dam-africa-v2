@@ -109,34 +109,45 @@ export default function DashboardPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left">
+            <button
+              onClick={() => router.push('/drivers')}
+              className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+            >
               <div className="text-sm font-medium text-gray-900">Conducteurs</div>
               <div className="text-xs text-gray-500 mt-1">Gérer les conducteurs</div>
             </button>
 
-            <button className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left">
+            <button
+              onClick={() => router.push('/kyc')}
+              className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+            >
               <div className="text-sm font-medium text-gray-900">Vérification KYC</div>
               <div className="text-xs text-gray-500 mt-1">Réviser les documents</div>
             </button>
 
-            <button className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left">
+            <button
+              onClick={() => router.push('/loans')}
+              className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+            >
               <div className="text-sm font-medium text-gray-900">Demandes de Prêt</div>
               <div className="text-xs text-gray-500 mt-1">Approuver/Rejeter</div>
             </button>
 
-            <button className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left">
+            <button
+              onClick={() => router.push('/payments')}
+              className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+            >
               <div className="text-sm font-medium text-gray-900">Paiements</div>
               <div className="text-xs text-gray-500 mt-1">Suivre les paiements</div>
             </button>
           </div>
         </div>
 
-        {/* Coming Soon */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">🚧 En Construction</h3>
-          <p className="text-blue-700">
-            Les pages complètes de gestion (conducteurs, KYC, prêts, paiements) seront disponibles dans la Phase 2.
-            Le backend API est 100% prêt et fonctionnel.
+        {/* Status Update */}
+        <div className="mt-8 bg-green-50 border border-green-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-green-900 mb-2">✅ Nouveau: Gestion des Conducteurs</h3>
+          <p className="text-green-700">
+            La page de gestion des conducteurs est maintenant disponible! Cliquez sur "Conducteurs" ci-dessus pour voir la liste complète, filtrer, et gérer les comptes.
           </p>
         </div>
       </main>

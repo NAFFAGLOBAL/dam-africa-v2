@@ -75,7 +75,7 @@ export class PaymentService {
 
     if (!payment) throw new NotFoundError('Payment');
 
-    await db.$transaction(async (tx) => {
+    await db.$transaction(async (tx: any) => {
       await tx.payment.update({
         where: { id: paymentId },
         data: { status: 'SUCCESS', processedAt: new Date() },

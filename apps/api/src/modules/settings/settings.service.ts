@@ -9,7 +9,7 @@ export class SettingsService {
       orderBy: { key: 'asc' },
     });
 
-    const settingsMap = settings.reduce((acc: any, setting) => {
+    const settingsMap = settings.reduce((acc: any, setting: any) => {
       acc[setting.key] = {
         value: setting.value,
         description: setting.description,
@@ -141,7 +141,7 @@ export class SettingsService {
   async initializeDefaultSettings() {
     const defaults = this.getDefaultSettings();
     const existing = await db.setting.findMany();
-    const existingKeys = new Set(existing.map((s) => s.key));
+    const existingKeys = new Set(existing.map((s: any) => s.key));
 
     const settingsToCreate = Object.entries(defaults)
       .filter(([key]) => !existingKeys.has(key))

@@ -212,14 +212,14 @@ export class CreditService {
       return 0; // No documents submitted
     }
 
-    const approvedDocs = kycDocuments.filter((doc) => doc.status === 'APPROVED');
+    const approvedDocs = kycDocuments.filter((doc: any) => doc.status === 'APPROVED');
 
     // Check for key documents
     const hasIDCard = approvedDocs.some(
-      (doc) => doc.documentType === 'ID_CARD' || doc.documentType === 'PASSPORT'
+      (doc: any) => doc.documentType === 'ID_CARD' || doc.documentType === 'PASSPORT'
     );
-    const hasDriversLicense = approvedDocs.some((doc) => doc.documentType === 'DRIVERS_LICENSE');
-    const hasSelfie = approvedDocs.some((doc) => doc.documentType === 'SELFIE');
+    const hasDriversLicense = approvedDocs.some((doc: any) => doc.documentType === 'DRIVERS_LICENSE');
+    const hasSelfie = approvedDocs.some((doc: any) => doc.documentType === 'SELFIE');
 
     if (hasIDCard && hasDriversLicense && hasSelfie) {
       return 1000; // All key documents verified
@@ -234,7 +234,7 @@ export class CreditService {
     }
 
     // Some documents pending
-    if (kycDocuments.some((doc) => doc.status === 'PENDING')) {
+    if (kycDocuments.some((doc: any) => doc.status === 'PENDING')) {
       return 300;
     }
 

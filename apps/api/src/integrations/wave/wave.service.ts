@@ -47,7 +47,7 @@ export class WavePaymentService {
     }
   }
 
-  private getMockResponse(amount: number, currency: string, customerPhone: string): CheckoutSessionResponse {
+  private getMockResponse(amount: number, currency: string, _customerPhone: string): CheckoutSessionResponse {
     return {
       id: `mock_wave_${Date.now()}`,
       wave_launch_url: `https://wave.com/checkout/mock_${Date.now()}`,
@@ -134,7 +134,7 @@ export class WavePaymentService {
     }
   }
 
-  async handleWebhook(payload: WaveWebhookPayload, signature?: string): Promise<{
+  async handleWebhook(payload: WaveWebhookPayload, _signature?: string): Promise<{
     transactionId: string;
     status: 'success' | 'failed';
     amount: number;

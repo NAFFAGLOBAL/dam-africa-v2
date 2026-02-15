@@ -20,7 +20,7 @@ export class ReportController {
     sendSuccess(res, analytics);
   });
 
-  getDriverAnalytics = asyncHandler(async (req: Request, res: Response) => {
+  getDriverAnalytics = asyncHandler(async (_req: Request, res: Response) => {
     const analytics = await reportService.getDriverAnalytics();
     sendSuccess(res, analytics);
   });
@@ -46,7 +46,7 @@ export class ReportController {
     sendSuccess(res, revenue);
   });
 
-  getDashboardStats = asyncHandler(async (req: Request, res: Response) => {
+  getDashboardStats = asyncHandler(async (_req: Request, res: Response) => {
     const stats = await reportService.getDashboardStats();
     sendSuccess(res, stats);
   });

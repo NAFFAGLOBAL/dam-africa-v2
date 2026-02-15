@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { settingsService } from './settings.service';
-import { sendSuccess, sendCreated } from '../../utils/response';
+import { sendSuccess } from '../../utils/response';
 import { asyncHandler } from '../../middleware/errorHandler';
 import type { UpsertSettingInput } from './settings.schemas';
 
 export class SettingsController {
-  getAllSettings = asyncHandler(async (req: Request, res: Response) => {
+  getAllSettings = asyncHandler(async (_req: Request, res: Response) => {
     const settings = await settingsService.getAllSettings();
     sendSuccess(res, settings);
   });
@@ -29,12 +29,12 @@ export class SettingsController {
     sendSuccess(res, result, 'Paramètre supprimé avec succès');
   });
 
-  getDefaultSettings = asyncHandler(async (req: Request, res: Response) => {
+  getDefaultSettings = asyncHandler(async (_req: Request, res: Response) => {
     const defaults = settingsService.getDefaultSettings();
     sendSuccess(res, defaults);
   });
 
-  initializeDefaultSettings = asyncHandler(async (req: Request, res: Response) => {
+  initializeDefaultSettings = asyncHandler(async (_req: Request, res: Response) => {
     const result = await settingsService.initializeDefaultSettings();
     sendSuccess(res, result, 'Paramètres par défaut initialisés avec succès');
   });

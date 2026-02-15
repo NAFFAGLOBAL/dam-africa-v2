@@ -64,7 +64,7 @@ export class VehicleController {
     sendSuccess(res, rentals);
   });
 
-  getFleetStats = asyncHandler(async (req: Request, res: Response) => {
+  getFleetStats = asyncHandler(async (_req: Request, res: Response) => {
     const stats = await vehicleService.getFleetStats();
     sendSuccess(res, stats);
   });

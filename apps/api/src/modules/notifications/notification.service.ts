@@ -2,7 +2,6 @@ import { db } from '../../utils/database';
 import { NotFoundError, BadRequestError } from '../../utils/errors';
 import { logger } from '../../utils/logger';
 import type { CreateNotificationInput } from './notification.schemas';
-import type { NotificationType } from '@prisma/client';
 
 export class NotificationService {
   async getUserNotifications(userId: string, page: number = 1, limit: number = 20) {
@@ -117,7 +116,7 @@ export class NotificationService {
   }
 
   async sendLoanStatusNotification(userId: string, loanId: string, status: 'APPROVED' | 'REJECTED', reason?: string) {
-    const type: NotificationType = status === 'APPROVED' ? 'LOAN_APPROVED' : 'LOAN_REJECTED';
+    const type = status === 'APPROVED' ? 'LOAN_APPROVED' : 'LOAN_REJECTED';
     const title = status === 'APPROVED' ? 'Prêt approuvé' : 'Prêt rejeté';
     const message =
       status === 'APPROVED'
@@ -134,7 +133,7 @@ export class NotificationService {
   }
 
   async sendKYCStatusNotification(userId: string, documentId: string, status: 'APPROVED' | 'REJECTED', reason?: string) {
-    const type: NotificationType = status === 'APPROVED' ? 'KYC_APPROVED' : 'KYC_REJECTED';
+    const type = status === 'APPROVED' ? 'KYC_APPROVED' : 'KYC_REJECTED';
     const title = status === 'APPROVED' ? 'Document KYC approuvé' : 'Document KYC rejeté';
     const message =
       status === 'APPROVED'
@@ -153,7 +152,6 @@ export class NotificationService {
   async sendCreditScoreNotification(userId: string, oldScore: number, newScore: number) {
     const change = newScore - oldScore;
     const direction = change > 0 ? 'augmenté' : 'diminué';
-    const emoji = change > 0 ? '📈' : '📉';
 
     return this.createNotification({
       userId,

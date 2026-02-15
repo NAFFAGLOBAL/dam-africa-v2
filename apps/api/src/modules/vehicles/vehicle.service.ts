@@ -1,7 +1,7 @@
 import { db } from '../../utils/database';
 import { NotFoundError, BadRequestError } from '../../utils/errors';
 import { logger } from '../../utils/logger';
-import type { CreateVehicleInput, UpdateVehicleInput, AssignVehicleInput, ReturnVehicleInput } from './vehicle.schemas';
+import type { CreateVehicleInput, UpdateVehicleInput, AssignVehicleInput } from './vehicle.schemas';
 
 export class VehicleService {
   async listVehicles(page: number = 1, limit: number = 20, status?: string) {
@@ -149,7 +149,7 @@ export class VehicleService {
       throw new BadRequestError('User already has an active vehicle rental');
     }
 
-    const rental = await db.$transaction(async (tx) => {
+    const rental = await db.$transaction(async (tx: any) => {
       const newRental = await tx.vehicleRental.create({
         data: {
           vehicleId,
@@ -190,7 +190,7 @@ export class VehicleService {
       throw new BadRequestError('Rental is not active');
     }
 
-    const updated = await db.$transaction(async (tx) => {
+    const updated = await db.$transaction(async (tx: any) => {
       const updatedRental = await tx.vehicleRental.update({
         where: { id: rentalId },
         data: {

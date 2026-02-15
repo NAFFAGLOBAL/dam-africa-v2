@@ -13,7 +13,7 @@ export class ReportService {
     const [
       totalDisbursed,
       totalCollected,
-      totalOutstanding,
+      _totalOutstanding,
       activeLoans,
       completedLoans,
     ] = await Promise.all([
@@ -92,7 +92,7 @@ export class ReportService {
       db.loan.count({ where: { ...where, status: 'DEFAULTED' } }),
     ]);
 
-    const statusBreakdown = loansByStatus.reduce((acc: any, item) => {
+    const statusBreakdown = loansByStatus.reduce((acc: any, item: any) => {
       acc[item.status] = item._count;
       return acc;
     }, {});
@@ -138,12 +138,12 @@ export class ReportService {
       db.user.count({ where: { status: 'SUSPENDED' } }),
     ]);
 
-    const kycBreakdown = driversByKYCStatus.reduce((acc: any, item) => {
+    const kycBreakdown = driversByKYCStatus.reduce((acc: any, item: any) => {
       acc[item.kycStatus] = item._count;
       return acc;
     }, {});
 
-    const creditScoreDistribution = scoreDistribution.reduce((acc: any, item) => {
+    const creditScoreDistribution = scoreDistribution.reduce((acc: any, item: any) => {
       acc[item.creditRating || 'UNRATED'] = item._count;
       return acc;
     }, {});
@@ -200,7 +200,7 @@ export class ReportService {
       }),
     ]);
 
-    const methodBreakdown = paymentsByMethod.reduce((acc: any, item) => {
+    const methodBreakdown = paymentsByMethod.reduce((acc: any, item: any) => {
       acc[item.method] = {
         count: item._count,
         totalAmount: Number(item._sum.amount || 0),
@@ -208,7 +208,7 @@ export class ReportService {
       return acc;
     }, {});
 
-    const statusBreakdown = paymentsByStatus.reduce((acc: any, item) => {
+    const statusBreakdown = paymentsByStatus.reduce((acc: any, item: any) => {
       acc[item.status] = item._count;
       return acc;
     }, {});
@@ -246,7 +246,7 @@ export class ReportService {
 
     const revenueData: { [key: string]: number } = {};
 
-    payments.forEach((payment) => {
+    payments.forEach((payment: any) => {
       let key: string;
       const date = new Date(payment.createdAt);
 

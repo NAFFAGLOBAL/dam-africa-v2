@@ -183,6 +183,155 @@ class APIClient {
       body: JSON.stringify({ status, failureReason }),
     });
   }
+
+  // Credit Scoring
+  async getCreditScores(params?: {
+    page?: number;
+    limit?: number;
+    rating?: string;
+    search?: string;
+  }) {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/api/v1/admin/credit${query ? `?${query}` : ''}`);
+  }
+
+  async getCreditScore(userId: string) {
+    return this.request(`/api/v1/admin/credit/${userId}`);
+  }
+
+  async recalculateCreditScore(userId: string) {
+    return this.request(`/api/v1/admin/credit/${userId}/recalculate`, {
+      method: 'POST',
+    });
+  }
+
+  async getCreditScoreHistory(userId: string) {
+    return this.request(`/api/v1/admin/credit/${userId}/history`);
+  }
+
+  // Vehicles
+  async getVehicles(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+  }) {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/api/v1/vehicles${query ? `?${query}` : ''}`);
+  }
+
+  async getVehicle(vehicleId: string) {
+    return this.request(`/api/v1/vehicles/${vehicleId}`);
+  }
+
+  async createVehicle(data: any) {
+    return this.request(`/api/v1/vehicles`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateVehicle(vehicleId: string, data: any) {
+    return this.request(`/api/v1/vehicles/${vehicleId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteVehicle(vehicleId: string) {
+    return this.request(`/api/v1/vehicles/${vehicleId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async assignVehicle(vehicleId: string, data: { userId: string; weeklyRate: number }) {
+    return this.request(`/api/v1/vehicles/${vehicleId}/assign`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async returnVehicle(rentalId: string, data: { condition?: string; notes?: string }) {
+    return this.request(`/api/v1/vehicles/rentals/${rentalId}/return`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getVehicleStats() {
+    return this.request(`/api/v1/vehicles/stats`);
+  }
+
+  // Reports
+  async getFinancialSummary(params?: {
+    startDate?: string;
+    endDate?: string;
+  }) {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/api/v1/admin/reports/financial${query ? `?${query}` : ''}`);
+  }
+
+  async getLoanAnalytics(params?: {
+    startDate?: string;
+    endDate?: string;
+  }) {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/api/v1/admin/reports/loans${query ? `?${query}` : ''}`);
+  }
+
+  async getPaymentAnalytics(params?: {
+    startDate?: string;
+    endDate?: string;
+  }) {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/api/v1/admin/reports/payments${query ? `?${query}` : ''}`);
+  }
+
+  async getDriverAnalytics() {
+    return this.request(`/api/v1/admin/reports/drivers`);
+  }
+
+  // Settings
+  async getSettings() {
+    return this.request(`/api/v1/admin/settings`);
+  }
+
+  async getSetting(key: string) {
+    return this.request(`/api/v1/admin/settings/${key}`);
+  }
+
+  async updateSetting(key: string, data: { value: any }) {
+    return this.request(`/api/v1/admin/settings/${key}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Notifications
+  async getNotifications(params?: {
+    page?: number;
+    limit?: number;
+    isRead?: boolean;
+  }) {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/api/v1/notifications${query ? `?${query}` : ''}`);
+  }
+
+  async getUnreadCount() {
+    return this.request(`/api/v1/notifications/unread/count`);
+  }
+
+  async markAsRead(notificationId: string) {
+    return this.request(`/api/v1/notifications/${notificationId}/read`, {
+      method: 'POST',
+    });
+  }
+
+  async markAllAsRead() {
+    return this.request(`/api/v1/notifications/read-all`, {
+      method: 'POST',
+    });
+  }
 }
 
 export const api = new APIClient();

@@ -3,6 +3,7 @@ import { creditService } from '../credit/credit.service';
 import { NotFoundError, BadRequestError } from '../../utils/errors';
 import { logger } from '../../utils/logger';
 import { config } from '../../config';
+import { wavePaymentService } from '../../integrations/wave/wave.service';
 import type { InitiatePaymentInput, ManualPaymentInput } from './payment.schemas';
 
 export class PaymentService {
@@ -21,6 +22,27 @@ export class PaymentService {
       throw new BadRequestError(`Amount exceeds outstanding balance of ${outstanding} XOF`);
     }
 
+    let providerReference: string | undefined;
+    let waveCheckoutUrl: string | undefined;
+
+    // Handle Wave payment method
+    if (data.method === 'WAVE' && wavePaymentService.isEnabled()) {
+      try {
+        const waveSession = await wavePaymentService.createCheckoutSession(
+          data.amount,
+          'XOF',
+          loan.user.phone,
+          `Payment for loan ${loan.id}`,
+          data.reference
+        );
+        providerReference = waveSession.id;
+        waveCheckoutUrl = waveSession.wave_launch_url;
+      } catch (error: any) {
+        logger.error('Wave checkout creation failed:', { error: error.message });
+        throw new BadRequestError('Failed to initiate Wave payment');
+      }
+    }
+
     const payment = await db.payment.create({
       data: {
         userId,
@@ -28,6 +50,7 @@ export class PaymentService {
         amount: data.amount,
         method: data.method,
         reference: data.reference,
+        providerReference,
         status: config.integrations.mockMode ? 'SUCCESS' : 'PENDING',
       },
     });
@@ -37,7 +60,11 @@ export class PaymentService {
     }
 
     logger.info('Payment initiated:', { paymentId: payment.id, userId, amount: data.amount });
-    return payment;
+
+    return {
+      ...payment,
+      waveCheckoutUrl,
+    };
   }
 
   async processSuccessfulPayment(paymentId: string) {
@@ -179,6 +206,30 @@ export class PaymentService {
     await this.processSuccessfulPayment(payment.id);
     logger.info('Manual payment created:', { paymentId: payment.id, adminAction: true });
     return payment;
+  }
+
+  async getPaymentByProviderReference(providerReference: string) {
+    const payment = await db.payment.findFirst({
+      where: { providerReference },
+    });
+    return payment;
+  }
+
+  async markPaymentAsFailed(paymentId: string, reason: string) {
+    const payment = await db.payment.findUnique({ where: { id: paymentId } });
+    if (!payment) throw new NotFoundError('Payment');
+
+    const updated = await db.payment.update({
+      where: { id: paymentId },
+      data: {
+        status: 'FAILED',
+        notes: reason,
+        processedAt: new Date(),
+      },
+    });
+
+    logger.info('Payment marked as failed:', { paymentId, reason });
+    return updated;
   }
 }
 

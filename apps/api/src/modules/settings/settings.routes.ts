@@ -1,11 +1,55 @@
 import { Router } from 'express';
-import { authenticateAdmin } from '../../middleware/auth';
-import { sendSuccess } from '../../utils/response';
+import { settingsController } from './settings.controller';
+import { validate } from '../../middleware/validate';
+import { authenticateAdmin, authorizeAdmin } from '../../middleware/auth';
+import { upsertSettingSchema, settingKeyParamSchema } from './settings.schemas';
 
 const router = Router();
 
-router.get('/', authenticateAdmin, async (req, res) => {
-  sendSuccess(res, {}, 'Settings module - Coming in Phase 2');
-});
+// All settings routes require SUPER_ADMIN authentication
+router.get(
+  '/',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN'),
+  settingsController.getAllSettings
+);
+
+router.get(
+  '/defaults',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN'),
+  settingsController.getDefaultSettings
+);
+
+router.post(
+  '/initialize',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN'),
+  settingsController.initializeDefaultSettings
+);
+
+router.get(
+  '/:key',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN'),
+  validate(settingKeyParamSchema),
+  settingsController.getSetting
+);
+
+router.put(
+  '/:key',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN'),
+  validate(upsertSettingSchema),
+  settingsController.upsertSetting
+);
+
+router.delete(
+  '/:key',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN'),
+  validate(settingKeyParamSchema),
+  settingsController.deleteSetting
+);
 
 export default router;

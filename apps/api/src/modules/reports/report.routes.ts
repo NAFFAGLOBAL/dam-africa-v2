@@ -1,11 +1,49 @@
 import { Router } from 'express';
-import { authenticateAdmin } from '../../middleware/auth';
-import { sendSuccess } from '../../utils/response';
+import { reportController } from './report.controller';
+import { authenticateAdmin, authorizeAdmin } from '../../middleware/auth';
 
 const router = Router();
 
-router.get('/dashboard', authenticateAdmin, async (req, res) => {
-  sendSuccess(res, {}, 'Reports module - Coming in Phase 2');
-});
+// All report routes require admin authentication
+router.get(
+  '/financial',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'FINANCE'),
+  reportController.getFinancialSummary
+);
+
+router.get(
+  '/loans',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'LOAN_OFFICER', 'FINANCE'),
+  reportController.getLoanAnalytics
+);
+
+router.get(
+  '/drivers',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'LOAN_OFFICER'),
+  reportController.getDriverAnalytics
+);
+
+router.get(
+  '/payments',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'FINANCE'),
+  reportController.getPaymentAnalytics
+);
+
+router.get(
+  '/revenue',
+  authenticateAdmin,
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'FINANCE'),
+  reportController.getRevenueByPeriod
+);
+
+router.get(
+  '/dashboard',
+  authenticateAdmin,
+  reportController.getDashboardStats
+);
 
 export default router;

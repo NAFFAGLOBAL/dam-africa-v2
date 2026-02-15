@@ -34,6 +34,8 @@ const envSchema = z.object({
   
   YANGO_API_URL: z.string().url().optional(),
   YANGO_API_KEY: z.string().optional(),
+  YANGO_CLIENT_ID: z.string().optional(),
+  YANGO_PARTNER_ID: z.string().optional(),
   
   WAVE_API_URL: z.string().url().optional(),
   WAVE_API_KEY: z.string().optional(),
@@ -137,6 +139,8 @@ export const config = {
     yango: {
       apiUrl: env.YANGO_API_URL,
       apiKey: env.YANGO_API_KEY,
+      clientId: env.YANGO_CLIENT_ID,
+      partnerId: env.YANGO_PARTNER_ID,
       enabled: Boolean(env.YANGO_API_URL && env.YANGO_API_KEY),
     },
     wave: {

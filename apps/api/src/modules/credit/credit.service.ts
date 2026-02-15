@@ -1,6 +1,7 @@
 import { db } from '../../utils/database';
 import { NotFoundError } from '../../utils/errors';
 import { logger } from '../../utils/logger';
+import { yangoFleetService } from '../../integrations/yango/yango.service';
 
 /**
  * Credit Score Calculation Formula
@@ -125,15 +126,78 @@ export class CreditService {
 
   /**
    * Calculate driving performance score (0-1000)
-   * Note: This would integrate with Yango/Uffizio API in production
+   * Integrates with Yango Fleet API for real driver performance data
    */
-  private calculateDrivingPerformanceScore(userId: string): number {
-    // Mock implementation - In production, this would fetch data from:
-    // - Yango API: trip completion rate, customer ratings
-    // - Uffizio API: kilometers driven, driving behavior
-    
-    // For now, return a default score
-    return 500;
+  private async calculateDrivingPerformanceScore(userId: string): Promise<number> {
+    if (!yangoFleetService.isEnabled()) {
+      return 500; // Default score when Yango is not available
+    }
+
+    try {
+      // Get user's phone to match with Yango driver
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { phone: true },
+      });
+
+      if (!user) {
+        return 500;
+      }
+
+      // Get all drivers from Yango
+      const drivers = await yangoFleetService.getDrivers();
+      const driver = drivers.find((d) => d.phone === user.phone);
+
+      if (!driver) {
+        return 500; // User not found in Yango fleet
+      }
+
+      // Get driver performance metrics
+      const performance = await yangoFleetService.getDriverPerformance(driver.driver_profile_id);
+
+      // Calculate score based on performance metrics
+      let score = 0;
+
+      // Rating component (0-400 points)
+      if (performance.average_rating >= 4.8) score += 400;
+      else if (performance.average_rating >= 4.5) score += 350;
+      else if (performance.average_rating >= 4.0) score += 250;
+      else if (performance.average_rating >= 3.5) score += 150;
+      else score += 50;
+
+      // Acceptance rate component (0-300 points)
+      if (performance.acceptance_rate >= 0.95) score += 300;
+      else if (performance.acceptance_rate >= 0.90) score += 250;
+      else if (performance.acceptance_rate >= 0.80) score += 200;
+      else if (performance.acceptance_rate >= 0.70) score += 100;
+      else score += 50;
+
+      // Trip completion component (0-300 points)
+      const completionRate =
+        performance.total_trips > 0
+          ? performance.completed_trips / performance.total_trips
+          : 0;
+      if (completionRate >= 0.95) score += 300;
+      else if (completionRate >= 0.90) score += 250;
+      else if (completionRate >= 0.80) score += 200;
+      else if (completionRate >= 0.70) score += 100;
+      else score += 50;
+
+      logger.info('Driving performance score calculated from Yango:', {
+        userId,
+        driverId: driver.driver_profile_id,
+        score,
+        performance,
+      });
+
+      return Math.min(score, 1000); // Cap at 1000
+    } catch (error: any) {
+      logger.error('Failed to calculate driving performance from Yango:', {
+        userId,
+        error: error.message,
+      });
+      return 500; // Default score on error
+    }
   }
 
   /**
@@ -214,7 +278,7 @@ export class CreditService {
     const paymentHistoryScore = await this.calculatePaymentHistoryScore(userId);
     const loanUtilizationScore = await this.calculateLoanUtilizationScore(userId);
     const accountAgeScore = this.calculateAccountAgeScore(user.createdAt);
-    const drivingPerformanceScore = this.calculateDrivingPerformanceScore(userId);
+    const drivingPerformanceScore = await this.calculateDrivingPerformanceScore(userId);
     const kycCompletenessScore = await this.calculateKYCCompletenessScore(userId);
 
     // Calculate weighted total score

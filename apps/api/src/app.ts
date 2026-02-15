@@ -20,6 +20,7 @@ import notificationRoutes from './modules/notifications/notification.routes';
 import adminRoutes from './modules/admin/admin.routes';
 import reportRoutes from './modules/reports/report.routes';
 import settingsRoutes from './modules/settings/settings.routes';
+import { waveWebhookController } from './integrations/wave/wave.webhook';
 
 /**
  * Create and configure Express application
@@ -104,6 +105,9 @@ export const createApp = (): Application => {
   app.use(`${API_PREFIX}/admin`, adminRoutes);
   app.use(`${API_PREFIX}/reports`, reportRoutes);
   app.use(`${API_PREFIX}/settings`, settingsRoutes);
+
+  // Webhook endpoints
+  app.post(`${API_PREFIX}/webhooks/wave`, waveWebhookController.handleWebhook);
 
   // =================================================================
   // ERROR HANDLING

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "versium-reach": {
+      "type": "url",
+      "url": "https://app.versium.com/mcp/reach"
+    }
+  }
+}

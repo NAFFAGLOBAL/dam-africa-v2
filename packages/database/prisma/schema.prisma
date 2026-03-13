@@ -1,0 +1,919 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  LOAN_OFFICER
+  FINANCE
+  SUPPORT
+  FLEET_MANAGER
+}
+
+enum KYCStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum KYCDocumentType {
+  NATIONAL_ID
+  DRIVERS_LICENSE
+  PASSPORT
+  PROOF_OF_ADDRESS
+  SELFIE
+  OTHER
+}
+
+enum LoanStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DISBURSED
+  ACTIVE
+  COMPLETED
+  DEFAULTED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  WAVE
+  MOBILE_MONEY
+  BANK_TRANSFER
+  CASH
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  RETIRED
+  RESERVED
+}
+
+enum RentalStatus {
+  REQUESTED
+  APPROVED
+  ACTIVE
+  COMPLETED
+  TERMINATED
+  CANCELLED
+}
+
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  TERMINATED
+  DEFAULTED
+}
+
+enum ContractType {
+  RENT_TO_OWN
+  LEASE
+  STANDARD_RENTAL
+}
+
+enum AccidentSeverity {
+  MINOR
+  MODERATE
+  SEVERE
+  TOTAL_LOSS
+}
+
+enum AccidentStatus {
+  REPORTED
+  INVESTIGATING
+  RESOLVED
+  CLOSED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  PAYMENT_DUE
+  PAYMENT_RECEIVED
+  LOAN_STATUS
+  KYC_STATUS
+  RENTAL_STATUS
+  SYSTEM
+  BADGE_EARNED
+  MAINTENANCE
+  ALERT
+}
+
+enum CreditRating {
+  A
+  B
+  C
+  D
+  E
+}
+
+enum IncomeSource {
+  YANGO
+  UBER
+  BOLT
+  PRIVATE
+  OTHER
+}
+
+enum GeofenceType {
+  CITY_BOUNDARY
+  RESTRICTED_ZONE
+  PARKING
+  MAINTENANCE_CENTER
+  CUSTOM
+}
+
+// ============================================================
+// MULTI-TENANT
+// ============================================================
+
+model Customer {
+  id          String   @id @default(uuid())
+  name        String
+  code        String   @unique
+  email       String?
+  phone       String?
+  address     String?
+  logoUrl     String?
+  isActive    Boolean  @default(true)
+  settings    Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  admins      Admin[]
+  vehicles    Vehicle[]
+  loans       Loan[]
+  contracts   Contract[]
+  rentals     Rental[]
+
+  @@map("customers")
+}
+
+// ============================================================
+// AUTH & USERS
+// ============================================================
+
+model User {
+  id             String     @id @default(uuid())
+  email          String     @unique
+  phone          String     @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime?
+  address        String?
+  city           String?
+  profilePhoto   String?
+  licenseNumber  String?
+  status         UserStatus @default(PENDING)
+  isVerified     Boolean    @default(false)
+  lastLoginAt    DateTime?
+  customerId     String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  customer       Customer?  @relation(fields: [customerId], references: [id])
+  kycDocuments   KYCDocument[]
+  loans          Loan[]
+  payments       Payment[]
+  creditScores   CreditScoreHistory[]
+  rentals        Rental[]
+  contracts      Contract[]
+  accidentReports AccidentReport[]
+  incomeRecords  IncomeRecord[]
+  supportTickets SupportTicket[]
+  notifications  Notification[]
+  badges         DriverBadge[]
+  refreshTokens  RefreshToken[]
+  vehicleFavorites VehicleFavorite[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([email])
+  @@map("users")
+}
+
+model Admin {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  role           AdminRole @default(ADMIN)
+  isActive       Boolean   @default(true)
+  phone          String?
+  profilePhoto   String?
+  lastLoginAt    DateTime?
+  preferences    Json      @default("{}")
+  customerId     String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  refreshTokens  RefreshToken[]
+  auditLogs      AuditLog[]
+  assignedTickets SupportTicket[] @relation("AssignedTickets")
+
+  @@index([customerId])
+  @@index([role])
+  @@map("admins")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String?
+  adminId   String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user  User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  admin Admin? @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ============================================================
+// KYC
+// ============================================================
+
+model KYCDocument {
+  id           String          @id @default(uuid())
+  userId       String
+  type         KYCDocumentType
+  fileUrl      String
+  fileName     String?
+  status       KYCStatus       @default(PENDING)
+  reviewedBy   String?
+  reviewNote   String?
+  reviewedAt   DateTime?
+  expiresAt    DateTime?
+  metadata     Json?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@map("kyc_documents")
+}
+
+// ============================================================
+// LOANS & CREDIT
+// ============================================================
+
+model Loan {
+  id               String     @id @default(uuid())
+  userId           String
+  customerId       String?
+  amount           Float
+  interestRate     Float
+  termMonths       Int
+  monthlyPayment   Float
+  totalRepayment   Float
+  purpose          String?
+  status           LoanStatus @default(PENDING)
+  creditScore      Int?
+  creditRating     CreditRating?
+  approvedBy       String?
+  approvedAt       DateTime?
+  rejectedReason   String?
+  disbursedAt      DateTime?
+  startDate        DateTime?
+  endDate          DateTime?
+  paidAmount       Float      @default(0)
+  metadata         Json?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id])
+  customer   Customer?  @relation(fields: [customerId], references: [id])
+  payments   Payment[]
+  schedule   LoanSchedule[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([customerId])
+  @@map("loans")
+}
+
+model LoanSchedule {
+  id           String        @id @default(uuid())
+  loanId       String
+  installment  Int
+  dueDate      DateTime
+  amount       Float
+  principal    Float
+  interest     Float
+  paidAmount   Float         @default(0)
+  paidAt       DateTime?
+  status       PaymentStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+
+  loan Loan @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  @@index([loanId])
+  @@index([dueDate])
+  @@map("loan_schedules")
+}
+
+model CreditScoreHistory {
+  id              String       @id @default(uuid())
+  userId          String
+  score           Int
+  rating          CreditRating
+  paymentScore    Float
+  incomeScore     Float
+  drivingScore    Float
+  maxLoanAmount   Float
+  interestRate    Float
+  breakdown       Json?
+  calculatedAt    DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([calculatedAt])
+  @@map("credit_score_history")
+}
+
+// ============================================================
+// PAYMENTS
+// ============================================================
+
+model Payment {
+  id              String        @id @default(uuid())
+  userId          String
+  loanId          String?
+  rentalId        String?
+  contractId      String?
+  amount          Float
+  currency        String        @default("XOF")
+  method          PaymentMethod @default(WAVE)
+  status          PaymentStatus @default(PENDING)
+  reference       String        @unique
+  externalId      String?
+  phone           String?
+  description     String?
+  paidAt          DateTime?
+  failureReason   String?
+  metadata        Json?
+  reconciledAt    DateTime?
+  reconciledBy    String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  loan     Loan?     @relation(fields: [loanId], references: [id])
+  rental   Rental?   @relation(fields: [rentalId], references: [id])
+  contract Contract? @relation(fields: [contractId], references: [id])
+
+  @@index([userId])
+  @@index([loanId])
+  @@index([reference])
+  @@index([status])
+  @@map("payments")
+}
+
+// ============================================================
+// VEHICLES & FLEET
+// ============================================================
+
+model Vehicle {
+  id               String        @id @default(uuid())
+  customerId       String?
+  registrationNo   String        @unique
+  make             String
+  model            String
+  year             Int
+  color            String?
+  vin              String?       @unique
+  fuelType         String?
+  transmission     String?
+  seatingCapacity  Int?
+  status           VehicleStatus @default(AVAILABLE)
+  mileage          Float         @default(0)
+  dailyRate        Float?
+  weeklyRate       Float?
+  monthlyRate      Float?
+  purchasePrice    Float?
+  currentValue     Float?
+  insuranceExpiry  DateTime?
+  lastServiceDate  DateTime?
+  nextServiceDate  DateTime?
+  imageUrl         String?
+  gpsDeviceId      String?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  customer         Customer?           @relation(fields: [customerId], references: [id])
+  maintenanceRecords MaintenanceRecord[]
+  rentals          Rental[]
+  contracts        Contract[]
+  accidentReports  AccidentReport[]
+  trackingData     VehicleTracking[]
+  favorites        VehicleFavorite[]
+
+  @@index([customerId])
+  @@index([status])
+  @@map("vehicles")
+}
+
+model MaintenanceRecord {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  type        String
+  description String
+  cost        Float
+  mileageAt   Float?
+  performedBy String?
+  performedAt DateTime
+  nextDueAt   DateTime?
+  nextDueMileage Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("maintenance_records")
+}
+
+model VehicleFavorite {
+  id        String   @id @default(uuid())
+  userId    String
+  vehicleId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vehicleId])
+  @@map("vehicle_favorites")
+}
+
+// ============================================================
+// RENTALS
+// ============================================================
+
+model Rental {
+  id           String       @id @default(uuid())
+  userId       String
+  vehicleId    String
+  customerId   String?
+  status       RentalStatus @default(REQUESTED)
+  startDate    DateTime?
+  endDate      DateTime?
+  actualEnd    DateTime?
+  dailyRate    Float
+  totalCost    Float?
+  deposit      Float?
+  notes        String?
+  approvedBy   String?
+  approvedAt   DateTime?
+  terminatedBy String?
+  terminatedAt DateTime?
+  terminationReason String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  vehicle  Vehicle   @relation(fields: [vehicleId], references: [id])
+  customer Customer? @relation(fields: [customerId], references: [id])
+  payments Payment[]
+
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([status])
+  @@map("rentals")
+}
+
+// ============================================================
+// CONTRACTS (Rent-to-Own)
+// ============================================================
+
+model Contract {
+  id               String         @id @default(uuid())
+  userId           String
+  vehicleId        String
+  customerId       String?
+  type             ContractType   @default(RENT_TO_OWN)
+  status           ContractStatus @default(DRAFT)
+  startDate        DateTime?
+  endDate          DateTime?
+  totalValue       Float
+  monthlyPayment   Float
+  downPayment      Float          @default(0)
+  paidAmount       Float          @default(0)
+  totalInstallments Int
+  paidInstallments Int            @default(0)
+  ownershipThreshold Float?
+  terms            String?
+  notes            String?
+  signedAt         DateTime?
+  completedAt      DateTime?
+  terminatedAt     DateTime?
+  terminationReason String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id])
+  vehicle    Vehicle    @relation(fields: [vehicleId], references: [id])
+  customer   Customer?  @relation(fields: [customerId], references: [id])
+  payments   Payment[]
+  milestones ContractMilestone[]
+
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([status])
+  @@map("contracts")
+}
+
+model ContractMilestone {
+  id          String   @id @default(uuid())
+  contractId  String
+  title       String
+  description String?
+  targetDate  DateTime?
+  completedAt DateTime?
+  percentage  Float
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+  @@map("contract_milestones")
+}
+
+// ============================================================
+// ACCIDENTS
+// ============================================================
+
+model AccidentReport {
+  id          String           @id @default(uuid())
+  userId      String
+  vehicleId   String
+  severity    AccidentSeverity
+  status      AccidentStatus   @default(REPORTED)
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  description String
+  occurredAt  DateTime
+  reportedAt  DateTime         @default(now())
+  damageCost  Float?
+  insuranceClaim String?
+  resolvedAt  DateTime?
+  resolvedBy  String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  media   AccidentMedia[]
+  notes   AccidentNote[]
+
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([status])
+  @@map("accident_reports")
+}
+
+model AccidentMedia {
+  id         String   @id @default(uuid())
+  reportId   String
+  fileUrl    String
+  fileType   String
+  caption    String?
+  createdAt  DateTime @default(now())
+
+  report AccidentReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@map("accident_media")
+}
+
+model AccidentNote {
+  id        String   @id @default(uuid())
+  reportId  String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  report AccidentReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@map("accident_notes")
+}
+
+// ============================================================
+// TRACKING & GEOFENCING
+// ============================================================
+
+model VehicleTracking {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  latitude    Float
+  longitude   Float
+  speed       Float?
+  heading     Float?
+  altitude    Float?
+  ignition    Boolean?
+  fuelLevel   Float?
+  mileage     Float?
+  address     String?
+  timestamp   DateTime
+  source      String   @default("uffizio")
+  createdAt   DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([timestamp])
+  @@map("vehicle_tracking")
+}
+
+model GeofenceZone {
+  id          String       @id @default(uuid())
+  name        String
+  type        GeofenceType @default(CUSTOM)
+  coordinates Json
+  radius      Float?
+  isActive    Boolean      @default(true)
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  alerts GeofenceAlert[]
+
+  @@map("geofence_zones")
+}
+
+model GeofenceAlert {
+  id          String   @id @default(uuid())
+  zoneId      String
+  vehicleId   String
+  eventType   String
+  latitude    Float
+  longitude   Float
+  timestamp   DateTime
+  acknowledged Boolean @default(false)
+  createdAt   DateTime @default(now())
+
+  zone GeofenceZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@index([zoneId])
+  @@index([vehicleId])
+  @@map("geofence_alerts")
+}
+
+model DrivingBehavior {
+  id              String   @id @default(uuid())
+  vehicleId       String
+  driverId        String?
+  harshBraking    Int      @default(0)
+  harshAccel      Int      @default(0)
+  speeding        Int      @default(0)
+  idling          Int      @default(0)
+  totalDistance    Float    @default(0)
+  totalDuration   Float    @default(0)
+  safetyScore     Float?
+  periodStart     DateTime
+  periodEnd       DateTime
+  createdAt       DateTime @default(now())
+
+  @@index([vehicleId])
+  @@index([driverId])
+  @@map("driving_behavior")
+}
+
+// ============================================================
+// INCOME
+// ============================================================
+
+model IncomeRecord {
+  id          String       @id @default(uuid())
+  userId      String
+  source      IncomeSource
+  amount      Float
+  currency    String       @default("XOF")
+  date        DateTime
+  trips       Int?
+  hours       Float?
+  reference   String?
+  isVerified  Boolean      @default(false)
+  verifiedBy  String?
+  verifiedAt  DateTime?
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@index([source])
+  @@map("income_records")
+}
+
+// ============================================================
+// SUPPORT
+// ============================================================
+
+model SupportTicket {
+  id          String         @id @default(uuid())
+  userId      String
+  assigneeId  String?
+  subject     String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  category    String?
+  resolvedAt  DateTime?
+  closedAt    DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user     User    @relation(fields: [userId], references: [id])
+  assignee Admin?  @relation("AssignedTickets", fields: [assigneeId], references: [id])
+  messages TicketMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([assigneeId])
+  @@map("support_tickets")
+}
+
+model TicketMessage {
+  id        String   @id @default(uuid())
+  ticketId  String
+  senderId  String
+  senderType String
+  content   String
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("ticket_messages")
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// ============================================================
+// GAMIFICATION
+// ============================================================
+
+model BadgeDefinition {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  description String
+  iconUrl     String?
+  category    String?
+  criteria    Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  driverBadges DriverBadge[]
+
+  @@map("badge_definitions")
+}
+
+model DriverBadge {
+  id        String   @id @default(uuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+  metadata  Json?
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge BadgeDefinition @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@map("driver_badges")
+}
+
+// ============================================================
+// SETTINGS & FEATURE FLAGS
+// ============================================================
+
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  type      String   @default("string")
+  category  String?
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  description String?
+  isEnabled   Boolean  @default(false)
+  conditions  Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("feature_flags")
+}
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  adminId    String?
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  admin Admin? @relation(fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

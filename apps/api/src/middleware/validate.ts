@@ -1,95 +1,42 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+import { ZodSchema, ZodError } from 'zod';
 import { ValidationError } from '../utils/errors';
 
-/**
- * Validate request data using Zod schema
- */
-export const validate = (schema: AnyZodObject) => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      await schema.parseAsync({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
-      next();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const details = error.errors.map((err) => ({
-          field: err.path.join('.'),
-          message: err.message,
-        }));
-        next(new ValidationError('Validation failed', details));
-      } else {
-        next(error);
-      }
-    }
-  };
-};
+type ValidationTarget = 'body' | 'query' | 'params';
 
-/**
- * Validate request body only
- */
-export const validateBody = (schema: AnyZodObject) => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      req.body = await schema.parseAsync(req.body);
-      next();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const details = error.errors.map((err) => ({
-          field: err.path.join('.'),
-          message: err.message,
-        }));
-        next(new ValidationError('Validation failed', details));
-      } else {
-        next(error);
-      }
-    }
-  };
-};
+export function validate(schemas: Partial<Record<ValidationTarget, ZodSchema>>) {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    const errors: Record<string, unknown> = {};
 
-/**
- * Validate query parameters only
- */
-export const validateQuery = (schema: AnyZodObject) => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      req.query = await schema.parseAsync(req.query);
-      next();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const details = error.errors.map((err) => ({
-          field: err.path.join('.'),
-          message: err.message,
-        }));
-        next(new ValidationError('Validation failed', details));
-      } else {
-        next(error);
+    for (const [target, schema] of Object.entries(schemas) as [ValidationTarget, ZodSchema][]) {
+      try {
+        const parsed = schema.parse(req[target]);
+        req[target] = parsed;
+      } catch (error) {
+        if (error instanceof ZodError) {
+          errors[target] = error.errors.map((e) => ({
+            field: e.path.join('.'),
+            message: e.message,
+          }));
+        }
       }
     }
-  };
-};
 
-/**
- * Validate route parameters only
- */
-export const validateParams = (schema: AnyZodObject) => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      req.params = await schema.parseAsync(req.params);
-      next();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const details = error.errors.map((err) => ({
-          field: err.path.join('.'),
-          message: err.message,
-        }));
-        next(new ValidationError('Validation failed', details));
-      } else {
-        next(error);
-      }
+    if (Object.keys(errors).length > 0) {
+      return next(new ValidationError('Données invalides', errors));
     }
+    next();
   };
-};
+}
+
+export function validateBody(schema: ZodSchema) {
+  return validate({ body: schema });
+}
+
+export function validateQuery(schema: ZodSchema) {
+  return validate({ query: schema });
+}
+
+export function validateParams(schema: ZodSchema) {
+  return validate({ params: schema });
+}

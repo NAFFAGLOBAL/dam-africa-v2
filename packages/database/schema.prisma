@@ -1,9 +1,10 @@
-// DAM Africa Platform - Database Schema
-// Generator and datasource configuration
+// =============================================================================
+// DAMFlotte CLD - Enterprise Fleet Management & Driver Credit Scoring Platform
+// Prisma Schema - PostgreSQL
+// =============================================================================
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -11,58 +12,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================================================
-// USERS & AUTHENTICATION
-// ============================================================================
+// =============================================================================
+// ENUMS
+// =============================================================================
 
 enum UserStatus {
+  PENDING
   ACTIVE
   SUSPENDED
-  DELETED
+  DEACTIVATED
+  BLACKLISTED
 }
 
 enum KYCStatus {
   NOT_STARTED
-  PENDING
-  VERIFIED
+  IN_PROGRESS
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
   REJECTED
-}
-
-model User {
-  id                String            @id @default(uuid())
-  email             String            @unique
-  phone             String            @unique
-  passwordHash      String            @map("password_hash")
-  name              String
-  dateOfBirth       DateTime?         @map("date_of_birth") @db.Date
-  address           String?           @db.Text
-  city              String?           @db.VarChar(100)
-  country           String            @default("Côte d'Ivoire") @db.VarChar(100)
-  profilePhotoUrl   String?           @map("profile_photo_url") @db.Text
-  status            UserStatus        @default(ACTIVE)
-  kycStatus         KYCStatus         @default(NOT_STARTED) @map("kyc_status")
-  creditScore       Int               @default(0) @map("credit_score")
-  creditRating      String?           @map("credit_rating") @db.Char(1)
-  lastLogin         DateTime?         @map("last_login")
-  emailVerified     Boolean           @default(false) @map("email_verified")
-  phoneVerified     Boolean           @default(false) @map("phone_verified")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  // Relations
-  kycDocuments      KYCDocument[]
-  loans             Loan[]
-  payments          Payment[]
-  vehicleRentals    VehicleRental[]
-  creditHistory     CreditScoreHistory[]
-  notifications     Notification[]
-  activityLogs      ActivityLog[]
-
-  @@index([email])
-  @@index([phone])
-  @@index([kycStatus])
-  @@index([creditScore])
-  @@map("users")
 }
 
 enum AdminRole {
@@ -76,334 +44,124 @@ enum AdminRole {
 enum AdminStatus {
   ACTIVE
   INACTIVE
+  SUSPENDED
 }
-
-model Admin {
-  id                String            @id @default(uuid())
-  email             String            @unique
-  passwordHash      String            @map("password_hash")
-  name              String
-  role              AdminRole
-  status            AdminStatus       @default(ACTIVE)
-  lastLogin         DateTime?         @map("last_login")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  // Relations
-  kycReviews        KYCDocument[]     @relation("ReviewedBy")
-  loanApprovals     Loan[]            @relation("ApprovedBy")
-  activityLogs      ActivityLog[]
-
-  @@index([email])
-  @@index([role])
-  @@map("admins")
-}
-
-// ============================================================================
-// KYC DOCUMENTS
-// ============================================================================
 
 enum DocumentType {
-  ID_CARD
+  NATIONAL_ID
   PASSPORT
   DRIVERS_LICENSE
-  SELFIE
-  VEHICLE_REGISTRATION
   PROOF_OF_ADDRESS
+  VEHICLE_REGISTRATION
+  INSURANCE
+  SELFIE
+  OTHER
 }
 
 enum DocumentStatus {
   PENDING
   APPROVED
   REJECTED
+  EXPIRED
 }
-
-model KYCDocument {
-  id                String            @id @default(uuid())
-  userId            String            @map("user_id")
-  documentType      DocumentType      @map("document_type")
-  documentNumber    String?           @map("document_number") @db.VarChar(100)
-  expiryDate        DateTime?         @map("expiry_date") @db.Date
-  frontImageUrl     String?           @map("front_image_url") @db.Text
-  backImageUrl      String?           @map("back_image_url") @db.Text
-  status            DocumentStatus    @default(PENDING)
-  rejectionReason   String?           @map("rejection_reason") @db.Text
-  reviewedById      String?           @map("reviewed_by_id")
-  reviewedAt        DateTime?         @map("reviewed_at")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  // Relations
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reviewedBy        Admin?            @relation("ReviewedBy", fields: [reviewedById], references: [id])
-
-  @@index([userId])
-  @@index([status])
-  @@index([documentType])
-  @@map("kyc_documents")
-}
-
-// ============================================================================
-// LOANS
-// ============================================================================
 
 enum LoanStatus {
+  DRAFT
   PENDING
+  UNDER_REVIEW
   APPROVED
-  REJECTED
+  DISBURSED
   ACTIVE
   COMPLETED
   DEFAULTED
-}
-
-model Loan {
-  id                String            @id @default(uuid())
-  userId            String            @map("user_id")
-  amount            Decimal           @db.Decimal(12, 2)
-  interestRate      Decimal           @map("interest_rate") @db.Decimal(5, 2)
-  termWeeks         Int               @map("term_weeks")
-  totalRepayment    Decimal           @map("total_repayment") @db.Decimal(12, 2)
-  weeklyPayment     Decimal           @map("weekly_payment") @db.Decimal(12, 2)
-  purpose           String?           @db.VarChar(200)
-  status            LoanStatus        @default(PENDING)
-  rejectionReason   String?           @map("rejection_reason") @db.Text
-  approvedById      String?           @map("approved_by_id")
-  approvedAt        DateTime?         @map("approved_at")
-  disbursedAt       DateTime?         @map("disbursed_at")
-  startDate         DateTime?         @map("start_date") @db.Date
-  endDate           DateTime?         @map("end_date") @db.Date
-  amountPaid        Decimal           @default(0) @map("amount_paid") @db.Decimal(12, 2)
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  // Relations
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  approvedBy        Admin?            @relation("ApprovedBy", fields: [approvedById], references: [id])
-  schedule          LoanSchedule[]
-  payments          Payment[]
-
-  @@index([userId])
-  @@index([status])
-  @@index([startDate])
-  @@index([endDate])
-  @@map("loans")
+  REJECTED
+  CANCELLED
 }
 
 enum ScheduleStatus {
   PENDING
   PAID
-  PARTIAL
+  PARTIALLY_PAID
   OVERDUE
+  WAIVED
+  CANCELLED
 }
-
-model LoanSchedule {
-  id                String            @id @default(uuid())
-  loanId            String            @map("loan_id")
-  weekNumber        Int               @map("week_number")
-  dueDate           DateTime          @map("due_date") @db.Date
-  amountDue         Decimal           @map("amount_due") @db.Decimal(12, 2)
-  amountPaid        Decimal           @default(0) @map("amount_paid") @db.Decimal(12, 2)
-  status            ScheduleStatus    @default(PENDING)
-  paidAt            DateTime?         @map("paid_at")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  // Relations
-  loan              Loan              @relation(fields: [loanId], references: [id], onDelete: Cascade)
-  payments          Payment[]
-
-  @@index([loanId])
-  @@index([dueDate])
-  @@index([status])
-  @@map("loan_schedule")
-}
-
-// ============================================================================
-// PAYMENTS
-// ============================================================================
 
 enum PaymentMethod {
-  WAVE
-  ORANGE_MONEY
-  MTN_MOMO
+  MOBILE_MONEY
   BANK_TRANSFER
-  CARD
   CASH
+  CARD
+  WALLET
+  DEDUCTION
 }
 
 enum PaymentStatus {
   PENDING
-  SUCCESS
+  PROCESSING
+  COMPLETED
   FAILED
   REFUNDED
+  CANCELLED
 }
 
-model Payment {
-  id                String            @id @default(uuid())
-  userId            String            @map("user_id")
-  loanId            String            @map("loan_id")
-  scheduleId        String?           @map("schedule_id")
-  amount            Decimal           @db.Decimal(12, 2)
-  method            PaymentMethod
-  reference         String?           @db.VarChar(100)
-  status            PaymentStatus     @default(PENDING)
-  providerReference String?           @map("provider_reference") @db.VarChar(100)
-  providerResponse  Json?             @map("provider_response")
-  notes             String?           @db.Text
-  processedAt       DateTime?         @map("processed_at")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  // Relations
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  loan              Loan              @relation(fields: [loanId], references: [id], onDelete: Cascade)
-  schedule          LoanSchedule?     @relation(fields: [scheduleId], references: [id])
-
-  @@index([userId])
-  @@index([loanId])
-  @@index([status])
-  @@index([createdAt])
-  @@map("payments")
+enum PaymentType {
+  LOAN_REPAYMENT
+  RENTAL_PAYMENT
+  CONTRACT_PAYMENT
+  DEPOSIT
+  FEE
+  PENALTY
+  REFUND
+  OTHER
 }
-
-// ============================================================================
-// VEHICLES & RENTALS
-// ============================================================================
 
 enum VehicleStatus {
   AVAILABLE
-  RENTED
-  MAINTENANCE
-  RETIRED
+  ASSIGNED
+  IN_MAINTENANCE
+  RESERVED
+  DECOMMISSIONED
+  STOLEN
 }
 
-model Vehicle {
-  id                String            @id @default(uuid())
-  make              String            @db.VarChar(100)
-  model             String            @db.VarChar(100)
-  year              Int
-  licensePlate      String            @unique @map("license_plate") @db.VarChar(20)
-  color             String?           @db.VarChar(50)
-  vin               String?           @db.VarChar(50)
-  status            VehicleStatus     @default(AVAILABLE)
-  photoUrl          String?           @map("photo_url") @db.Text
-  purchasePrice     Decimal?          @map("purchase_price") @db.Decimal(12, 2)
-  currentValue      Decimal?          @map("current_value") @db.Decimal(12, 2)
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  // Relations
-  rentals           VehicleRental[]
-
-  @@index([status])
-  @@index([licensePlate])
-  @@map("vehicles")
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+  HYBRID
+  LPG
 }
 
 enum RentalStatus {
+  REQUESTED
+  APPROVED
   ACTIVE
-  COMPLETED
+  SUSPENDED
   TERMINATED
+  COMPLETED
+  REJECTED
 }
-
-model VehicleRental {
-  id                String            @id @default(uuid())
-  vehicleId         String            @map("vehicle_id")
-  userId            String            @map("user_id")
-  startDate         DateTime          @map("start_date") @db.Date
-  endDate           DateTime?         @map("end_date") @db.Date
-  weeklyRate        Decimal           @map("weekly_rate") @db.Decimal(12, 2)
-  status            RentalStatus      @default(ACTIVE)
-  returnNotes       String?           @map("return_notes") @db.Text
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  // Relations
-  vehicle           Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([vehicleId])
-  @@index([userId])
-  @@index([status])
-  @@map("vehicle_rentals")
-}
-
-// ============================================================================
-// CREDIT SCORING
-// ============================================================================
-
-model CreditScoreHistory {
-  id                String            @id @default(uuid())
-  userId            String            @map("user_id")
-  score             Int
-  rating            String            @db.Char(1)
-  changeReason      String?           @map("change_reason") @db.Text
-  paymentHistoryScore   Int?          @map("payment_history_score")
-  loanUtilizationScore  Int?          @map("loan_utilization_score")
-  accountAgeScore       Int?          @map("account_age_score")
-  drivingPerformanceScore Int?        @map("driving_performance_score")
-  kycCompletenessScore   Int?         @map("kyc_completeness_score")
-  createdAt         DateTime          @default(now()) @map("created_at")
-
-  // Relations
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([createdAt])
-  @@map("credit_score_history")
-}
-
-// ============================================================================
-// NOTIFICATIONS
-// ============================================================================
 
 enum NotificationType {
-  PAYMENT_REMINDER
-  PAYMENT_SUCCESS
-  PAYMENT_FAILED
-  LOAN_APPROVED
-  LOAN_REJECTED
-  KYC_APPROVED
-  KYC_REJECTED
-  CREDIT_SCORE_UPDATED
   SYSTEM
+  KYC_UPDATE
+  LOAN_UPDATE
+  PAYMENT_REMINDER
+  PAYMENT_RECEIVED
+  PAYMENT_OVERDUE
+  VEHICLE_ALERT
+  CREDIT_SCORE_UPDATE
+  RENTAL_UPDATE
+  CONTRACT_UPDATE
+  ACCIDENT_UPDATE
+  SUPPORT_UPDATE
+  BADGE_EARNED
+  GEOFENCE_ALERT
+  MAINTENANCE_DUE
+  PROMOTION
+  GENERAL
 }
-
-model Notification {
-  id                String            @id @default(uuid())
-  userId            String            @map("user_id")
-  type              NotificationType
-  title             String            @db.VarChar(255)
-  message           String            @db.Text
-  read              Boolean           @default(false)
-  metadata          Json?
-  createdAt         DateTime          @default(now()) @map("created_at")
-
-  // Relations
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([read])
-  @@index([createdAt])
-  @@map("notifications")
-}
-
-// ============================================================================
-// SYSTEM SETTINGS & CONFIGURATIONS
-// ============================================================================
-
-model Setting {
-  key               String            @id @db.VarChar(100)
-  value             Json
-  description       String?           @db.Text
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-
-  @@map("settings")
-}
-
-// ============================================================================
-// ACTIVITY LOGS
-// ============================================================================
 
 enum ActorType {
   USER
@@ -411,23 +169,1371 @@ enum ActorType {
   SYSTEM
 }
 
-model ActivityLog {
-  id                String            @id @default(uuid())
-  actorType         ActorType         @map("actor_type")
-  actorId           String?           @map("actor_id")
-  action            String            @db.VarChar(100)
-  entityType        String?           @map("entity_type") @db.VarChar(50)
-  entityId          String?           @map("entity_id")
-  details           Json?
-  ipAddress         String?           @map("ip_address") @db.VarChar(45)
-  createdAt         DateTime          @default(now()) @map("created_at")
+enum CustomerPlan {
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+  CUSTOM
+}
+
+enum CustomerStatus {
+  ACTIVE
+  TRIAL
+  SUSPENDED
+  CANCELLED
+}
+
+enum ContractStatus {
+  DRAFT
+  PENDING_APPROVAL
+  ACTIVE
+  PAUSED
+  COMPLETED
+  DEFAULTED
+  TERMINATED
+  CANCELLED
+}
+
+enum ContractPaymentStatus {
+  SCHEDULED
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  WAIVED
+  CANCELLED
+}
+
+enum MilestoneStatus {
+  PENDING
+  REACHED
+  CELEBRATED
+}
+
+enum AccidentSeverity {
+  MINOR
+  MODERATE
+  SEVERE
+  FATAL
+}
+
+enum AccidentStatus {
+  REPORTED
+  UNDER_INVESTIGATION
+  RESOLVED
+  CLOSED
+  DISPUTED
+}
+
+enum AccidentMediaType {
+  PHOTO
+  VIDEO
+  DOCUMENT
+}
+
+enum TelemetryEventType {
+  POSITION
+  OVERSPEED
+  HARSH_BRAKING
+  HARSH_ACCELERATION
+  SHARP_TURN
+  IDLE
+  ENGINE_ON
+  ENGINE_OFF
+  SOS
+}
+
+enum GeofenceType {
+  CIRCLE
+  POLYGON
+}
+
+enum GeofenceAlertType {
+  ENTRY
+  EXIT
+  DWELL
+}
+
+enum IncomeSource {
+  YANGO
+  UBER
+  BOLT
+  MANUAL
+  OTHER
+}
+
+enum TicketCategory {
+  VEHICLE_ISSUE
+  PAYMENT_ISSUE
+  LOAN_INQUIRY
+  KYC_HELP
+  APP_BUG
+  ACCOUNT_ISSUE
+  CONTRACT_ISSUE
+  ACCIDENT
+  GENERAL
+  OTHER
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_ON_CUSTOMER
+  WAITING_ON_AGENT
+  RESOLVED
+  CLOSED
+}
+
+enum SenderType {
+  USER
+  ADMIN
+  SYSTEM
+}
+
+enum DevicePlatform {
+  IOS
+  ANDROID
+  WEB
+}
+
+enum EmailDigest {
+  NONE
+  DAILY
+  WEEKLY
+}
+
+enum ThemePreference {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum MaintenanceType {
+  SCHEDULED
+  UNSCHEDULED
+  REPAIR
+  INSPECTION
+  TIRE_CHANGE
+  OIL_CHANGE
+  OTHER
+}
+
+// =============================================================================
+// MULTI-TENANT: CUSTOMER (TENANT)
+// =============================================================================
+
+model Customer {
+  id          String         @id @default(uuid()) @map("id")
+  name        String         @db.VarChar(200)
+  slug        String         @unique @db.VarChar(100)
+  email       String         @unique @db.VarChar(255)
+  phone       String?        @db.VarChar(30)
+  logoUrl     String?        @map("logo_url") @db.Text
+  primaryColor String?       @map("primary_color") @db.VarChar(7)
+  secondaryColor String?     @map("secondary_color") @db.VarChar(7)
+  plan        CustomerPlan   @default(STARTER) @map("plan")
+  status      CustomerStatus @default(TRIAL) @map("status")
+  maxDrivers  Int            @default(50) @map("max_drivers")
+  maxVehicles Int            @default(50) @map("max_vehicles")
+  maxAdmins   Int            @default(5) @map("max_admins")
+  trialEndsAt DateTime?      @map("trial_ends_at")
+  domain      String?        @db.VarChar(255)
+  timezone    String         @default("Africa/Abidjan") @db.VarChar(50)
+  currency    String         @default("XOF") @db.VarChar(3)
+  country     String         @default("CI") @db.VarChar(2)
+  metadata    Json?          @map("metadata")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
 
   // Relations
-  user              User?             @relation(fields: [actorId], references: [id])
-  admin             Admin?            @relation(fields: [actorId], references: [id])
+  users                  User[]
+  admins                 Admin[]
+  vehicles               Vehicle[]
+  loans                  Loan[]
+  payments               Payment[]
+  kycDocuments           KYCDocument[]
+  vehicleRentals         VehicleRental[]
+  rentToOwnContracts     RentToOwnContract[]
+  accidentReports        AccidentReport[]
+  geofenceZones          GeofenceZone[]
+  supportTickets         SupportTicket[]
+  creditScoreHistories   CreditScoreHistory[]
+  scoringConfigs         ScoringConfig[]
+  badgeDefinitions       BadgeDefinition[]
+  incomeRecords          IncomeRecord[]
+  notifications          Notification[]
+  activityLogs           ActivityLog[]
+  settings               Setting[]
+  featureFlags           FeatureFlag[]
+  aiUsageLogs            AIUsageLog[]
 
-  @@index([actorType, actorId])
+  @@map("customers")
+}
+
+// =============================================================================
+// CORE: USER (DRIVER)
+// =============================================================================
+
+model User {
+  id              String     @id @default(uuid()) @map("id")
+  customerId      String     @map("customer_id")
+  email           String?    @db.VarChar(255)
+  phone           String     @db.VarChar(30)
+  passwordHash    String?    @map("password_hash") @db.VarChar(255)
+  pinHash         String?    @map("pin_hash") @db.VarChar(255)
+  firstName       String     @map("first_name") @db.VarChar(100)
+  lastName        String     @map("last_name") @db.VarChar(100)
+  dateOfBirth     DateTime?  @map("date_of_birth")
+  gender          String?    @db.VarChar(10)
+  profilePhotoUrl String?    @map("profile_photo_url") @db.Text
+  address         String?    @db.Text
+  city            String?    @db.VarChar(100)
+  emergencyContactName  String? @map("emergency_contact_name") @db.VarChar(200)
+  emergencyContactPhone String? @map("emergency_contact_phone") @db.VarChar(30)
+  status          UserStatus @default(PENDING) @map("status")
+  kycStatus       KYCStatus  @default(NOT_STARTED) @map("kyc_status")
+  creditScore     Int        @default(0) @map("credit_score")
+  lastCreditScoreAt DateTime? @map("last_credit_score_at")
+  referralCode    String?    @unique @map("referral_code") @db.VarChar(20)
+  referredBy      String?    @map("referred_by") @db.VarChar(20)
+  preferredLanguage String   @default("fr") @map("preferred_language") @db.VarChar(5)
+  lastLoginAt     DateTime?  @map("last_login_at")
+  emailVerifiedAt DateTime?  @map("email_verified_at")
+  phoneVerifiedAt DateTime?  @map("phone_verified_at")
+  metadata        Json?      @map("metadata")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  customer              Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  kycDocuments          KYCDocument[]
+  loans                 Loan[]
+  payments              Payment[]
+  vehicleRentals        VehicleRental[]
+  rentToOwnContracts    RentToOwnContract[]
+  accidentReports       AccidentReport[]
+  creditScoreHistories  CreditScoreHistory[]
+  incomeRecords         IncomeRecord[]
+  supportTickets        SupportTicket[]
+  notifications         Notification[]
+  loginActivities       LoginActivity[]
+  deviceTokens          DeviceToken[]
+  pushSubscriptions     PushSubscription[]
+  driverBadges          DriverBadge[]
+  driverFavorites       DriverFavorite[]
+  activityLogs          ActivityLog[]
+  telemetryEvents       TelemetryEvent[]
+  geofenceAlerts        GeofenceAlert[]
+  aiExplanations        AIExplanation[]
+
+  @@unique([customerId, email])
+  @@unique([customerId, phone])
+  @@index([customerId])
+  @@index([status])
+  @@index([kycStatus])
+  @@index([creditScore])
+  @@map("users")
+}
+
+// =============================================================================
+// CORE: ADMIN
+// =============================================================================
+
+model Admin {
+  id           String      @id @default(uuid()) @map("id")
+  customerId   String      @map("customer_id")
+  email        String      @db.VarChar(255)
+  passwordHash String      @map("password_hash") @db.VarChar(255)
+  firstName    String      @map("first_name") @db.VarChar(100)
+  lastName     String      @map("last_name") @db.VarChar(100)
+  role         AdminRole   @default(SUPPORT) @map("role")
+  status       AdminStatus @default(ACTIVE) @map("status")
+  avatarUrl    String?     @map("avatar_url") @db.Text
+  phone        String?     @db.VarChar(30)
+  lastLoginAt  DateTime?   @map("last_login_at")
+  metadata     Json?       @map("metadata")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  kycReviews          KYCDocument[]        @relation("KYCReviewedBy")
+  loanReviews         Loan[]               @relation("LoanReviewedBy")
+  loanApprovals       Loan[]               @relation("LoanApprovedBy")
+  rentalApprovals     VehicleRental[]      @relation("RentalApprovedBy")
+  contractApprovals   RentToOwnContract[]  @relation("ContractApprovedBy")
+  accidentAssignments AccidentReport[]     @relation("AccidentAssignedTo")
+  accidentNotes       AccidentReportNote[]
+  ticketAssignments   SupportTicket[]      @relation("TicketAssignedTo")
+  ticketMessages      SupportTicketMessage[]
+  loginActivities     LoginActivity[]
+  activityLogs        ActivityLog[]
+  adminPreference     AdminPreference?
+  featureFlagAuditLogs FeatureFlagAuditLog[]
+
+  @@unique([customerId, email])
+  @@index([customerId])
+  @@index([role])
+  @@index([status])
+  @@map("admins")
+}
+
+// =============================================================================
+// KYC: DOCUMENTS
+// =============================================================================
+
+model KYCDocument {
+  id           String         @id @default(uuid()) @map("id")
+  customerId   String         @map("customer_id")
+  userId       String         @map("user_id")
+  type         DocumentType   @map("type")
+  status       DocumentStatus @default(PENDING) @map("status")
+  fileUrl      String         @map("file_url") @db.Text
+  fileName     String         @map("file_name") @db.VarChar(255)
+  fileSize     Int?           @map("file_size")
+  mimeType     String?        @map("mime_type") @db.VarChar(100)
+  documentNumber String?      @map("document_number") @db.VarChar(100)
+  expiryDate   DateTime?      @map("expiry_date")
+  rejectionReason String?     @map("rejection_reason") @db.Text
+  reviewedById String?        @map("reviewed_by_id")
+  reviewedAt   DateTime?      @map("reviewed_at")
+  metadata     Json?          @map("metadata")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy Admin?   @relation("KYCReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@map("kyc_documents")
+}
+
+// =============================================================================
+// VEHICLES
+// =============================================================================
+
+model Vehicle {
+  id                  String        @id @default(uuid()) @map("id")
+  customerId          String        @map("customer_id")
+  make                String        @db.VarChar(100)
+  model               String        @db.VarChar(100)
+  year                Int           @map("year")
+  color               String?       @db.VarChar(50)
+  licensePlate        String        @map("license_plate") @db.VarChar(20)
+  vin                 String?       @db.VarChar(50)
+  fuelType            FuelType      @default(PETROL) @map("fuel_type")
+  status              VehicleStatus @default(AVAILABLE) @map("status")
+  mileage             Int           @default(0) @map("mileage")
+  purchasePrice       Decimal?      @map("purchase_price") @db.Decimal(12, 2)
+  currentValue        Decimal?      @map("current_value") @db.Decimal(12, 2)
+  insuranceProvider   String?       @map("insurance_provider") @db.VarChar(200)
+  insurancePolicyNumber String?     @map("insurance_policy_number") @db.VarChar(100)
+  insuranceExpiryDate DateTime?     @map("insurance_expiry_date")
+  gpsDeviceId         String?       @map("gps_device_id") @db.VarChar(100)
+  gpsDeviceImei       String?       @map("gps_device_imei") @db.VarChar(20)
+  lastLatitude        Float?        @map("last_latitude")
+  lastLongitude       Float?        @map("last_longitude")
+  lastLocationAt      DateTime?     @map("last_location_at")
+  nextMaintenanceDate DateTime?     @map("next_maintenance_date")
+  nextMaintenanceMileage Int?       @map("next_maintenance_mileage")
+  photoUrl            String?       @map("photo_url") @db.Text
+  notes               String?       @db.Text
+  metadata            Json?         @map("metadata")
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  customer             Customer                  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vehicleRentals       VehicleRental[]
+  rentToOwnContracts   RentToOwnContract[]
+  accidentReports      AccidentReport[]
+  maintenanceRecords   VehicleMaintenanceRecord[]
+  telemetryEvents      TelemetryEvent[]
+  driverFavorites      DriverFavorite[]
+
+  @@unique([customerId, licensePlate])
+  @@index([customerId])
+  @@index([status])
+  @@index([gpsDeviceId])
+  @@map("vehicles")
+}
+
+// =============================================================================
+// VEHICLE RENTAL
+// =============================================================================
+
+model VehicleRental {
+  id              String       @id @default(uuid()) @map("id")
+  customerId      String       @map("customer_id")
+  userId          String       @map("user_id")
+  vehicleId       String       @map("vehicle_id")
+  status          RentalStatus @default(REQUESTED) @map("status")
+  weeklyRate      Decimal      @map("weekly_rate") @db.Decimal(12, 2)
+  depositAmount   Decimal      @default(0) @map("deposit_amount") @db.Decimal(12, 2)
+  depositPaid     Boolean      @default(false) @map("deposit_paid")
+  startDate       DateTime?    @map("start_date")
+  endDate         DateTime?    @map("end_date")
+  actualEndDate   DateTime?    @map("actual_end_date")
+  approvedById    String?      @map("approved_by_id")
+  approvedAt      DateTime?    @map("approved_at")
+  terminationReason String?    @map("termination_reason") @db.Text
+  notes           String?      @db.Text
+  metadata        Json?        @map("metadata")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  approvedBy Admin?   @relation("RentalApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([status])
+  @@map("vehicle_rentals")
+}
+
+// =============================================================================
+// VEHICLE MAINTENANCE
+// =============================================================================
+
+model VehicleMaintenanceRecord {
+  id              String          @id @default(uuid()) @map("id")
+  vehicleId       String          @map("vehicle_id")
+  type            MaintenanceType @map("type")
+  description     String          @db.Text
+  cost            Decimal?        @map("cost") @db.Decimal(12, 2)
+  mileageAtService Int?           @map("mileage_at_service")
+  serviceProvider String?         @map("service_provider") @db.VarChar(200)
+  servicedAt      DateTime        @map("serviced_at")
+  nextServiceDate DateTime?       @map("next_service_date")
+  nextServiceMileage Int?         @map("next_service_mileage")
+  notes           String?         @db.Text
+  metadata        Json?           @map("metadata")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([type])
+  @@map("vehicle_maintenance_records")
+}
+
+// =============================================================================
+// LOANS
+// =============================================================================
+
+model Loan {
+  id                String     @id @default(uuid()) @map("id")
+  customerId        String     @map("customer_id")
+  userId            String     @map("user_id")
+  loanNumber        String     @unique @map("loan_number") @db.VarChar(50)
+  status            LoanStatus @default(DRAFT) @map("status")
+  amount            Decimal    @map("amount") @db.Decimal(12, 2)
+  interestRate      Decimal    @map("interest_rate") @db.Decimal(5, 2)
+  totalRepayable    Decimal    @map("total_repayable") @db.Decimal(12, 2)
+  amountPaid        Decimal    @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  outstandingBalance Decimal   @default(0) @map("outstanding_balance") @db.Decimal(12, 2)
+  termWeeks         Int        @map("term_weeks")
+  purpose           String?    @db.Text
+  disbursedAt       DateTime?  @map("disbursed_at")
+  dueDate           DateTime?  @map("due_date")
+  completedAt       DateTime?  @map("completed_at")
+  reviewedById      String?    @map("reviewed_by_id")
+  reviewedAt        DateTime?  @map("reviewed_at")
+  reviewNotes       String?    @map("review_notes") @db.Text
+  approvedById      String?    @map("approved_by_id")
+  approvedAt        DateTime?  @map("approved_at")
+  rejectionReason   String?    @map("rejection_reason") @db.Text
+  creditScoreAtApplication Int? @map("credit_score_at_application")
+  metadata          Json?      @map("metadata")
+  createdAt         DateTime   @default(now()) @map("created_at")
+  updatedAt         DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  customer     Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy   Admin?         @relation("LoanReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+  approvedBy   Admin?         @relation("LoanApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+  schedules    LoanSchedule[]
+  payments     Payment[]
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([status])
+  @@index([loanNumber])
+  @@map("loans")
+}
+
+// =============================================================================
+// LOAN SCHEDULE
+// =============================================================================
+
+model LoanSchedule {
+  id             String         @id @default(uuid()) @map("id")
+  loanId         String         @map("loan_id")
+  weekNumber     Int            @map("week_number")
+  dueDate        DateTime       @map("due_date")
+  amountDue      Decimal        @map("amount_due") @db.Decimal(12, 2)
+  amountPaid     Decimal        @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  status         ScheduleStatus @default(PENDING) @map("status")
+  paidAt         DateTime?      @map("paid_at")
+  lateFee        Decimal        @default(0) @map("late_fee") @db.Decimal(12, 2)
+  notes          String?        @db.Text
+  metadata       Json?          @map("metadata")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  loan Loan @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  @@unique([loanId, weekNumber])
+  @@index([loanId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("loan_schedules")
+}
+
+// =============================================================================
+// PAYMENTS
+// =============================================================================
+
+model Payment {
+  id                String        @id @default(uuid()) @map("id")
+  customerId        String        @map("customer_id")
+  userId            String        @map("user_id")
+  loanId            String?       @map("loan_id")
+  contractId        String?       @map("contract_id")
+  paymentReference  String        @unique @map("payment_reference") @db.VarChar(100)
+  type              PaymentType   @map("type")
+  method            PaymentMethod @map("method")
+  status            PaymentStatus @default(PENDING) @map("status")
+  amount            Decimal       @map("amount") @db.Decimal(12, 2)
+  fee               Decimal       @default(0) @map("fee") @db.Decimal(12, 2)
+  netAmount         Decimal       @default(0) @map("net_amount") @db.Decimal(12, 2)
+  currency          String        @default("XOF") @db.VarChar(3)
+  providerReference String?       @map("provider_reference") @db.VarChar(255)
+  providerName      String?       @map("provider_name") @db.VarChar(100)
+  paidAt            DateTime?     @map("paid_at")
+  failureReason     String?       @map("failure_reason") @db.Text
+  description       String?       @db.Text
+  metadata          Json?         @map("metadata")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  customer          Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loan              Loan?              @relation(fields: [loanId], references: [id], onDelete: SetNull)
+  rentToOwnContract RentToOwnContract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([loanId])
+  @@index([contractId])
+  @@index([status])
+  @@index([type])
+  @@index([paymentReference])
+  @@map("payments")
+}
+
+// =============================================================================
+// RENT-TO-OWN: CONTRACT
+// =============================================================================
+
+model RentToOwnContract {
+  id                String         @id @default(uuid()) @map("id")
+  customerId        String         @map("customer_id")
+  userId            String         @map("user_id")
+  vehicleId         String         @map("vehicle_id")
+  contractNumber    String         @unique @map("contract_number") @db.VarChar(50)
+  status            ContractStatus @default(DRAFT) @map("status")
+  vehiclePrice      Decimal        @map("vehicle_price") @db.Decimal(12, 2)
+  downPayment       Decimal        @default(0) @map("down_payment") @db.Decimal(12, 2)
+  totalAmount       Decimal        @map("total_amount") @db.Decimal(12, 2)
+  weeklyPayment     Decimal        @map("weekly_payment") @db.Decimal(12, 2)
+  totalWeeks        Int            @default(156) @map("total_weeks")
+  weeksCompleted    Int            @default(0) @map("weeks_completed")
+  amountPaid        Decimal        @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  outstandingBalance Decimal       @default(0) @map("outstanding_balance") @db.Decimal(12, 2)
+  ownershipPercentage Decimal      @default(0) @map("ownership_percentage") @db.Decimal(5, 2)
+  startDate         DateTime?      @map("start_date")
+  expectedEndDate   DateTime?      @map("expected_end_date")
+  actualEndDate     DateTime?      @map("actual_end_date")
+  approvedById      String?        @map("approved_by_id")
+  approvedAt        DateTime?      @map("approved_at")
+  terminationReason String?        @map("termination_reason") @db.Text
+  notes             String?        @db.Text
+  metadata          Json?          @map("metadata")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  customer           Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle            Vehicle             @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  approvedBy         Admin?              @relation("ContractApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+  contractPayments   ContractPayment[]
+  contractMilestones ContractMilestone[]
+  payments           Payment[]
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([status])
+  @@index([contractNumber])
+  @@map("rent_to_own_contracts")
+}
+
+// =============================================================================
+// RENT-TO-OWN: CONTRACT PAYMENT
+// =============================================================================
+
+model ContractPayment {
+  id             String                @id @default(uuid()) @map("id")
+  contractId     String                @map("contract_id")
+  weekNumber     Int                   @map("week_number")
+  dueDate        DateTime              @map("due_date")
+  amountDue      Decimal               @map("amount_due") @db.Decimal(12, 2)
+  amountPaid     Decimal               @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  status         ContractPaymentStatus @default(SCHEDULED) @map("status")
+  paidAt         DateTime?             @map("paid_at")
+  lateFee        Decimal               @default(0) @map("late_fee") @db.Decimal(12, 2)
+  notes          String?               @db.Text
+  metadata       Json?                 @map("metadata")
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+
+  // Relations
+  contract RentToOwnContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@unique([contractId, weekNumber])
+  @@index([contractId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("contract_payments")
+}
+
+// =============================================================================
+// RENT-TO-OWN: CONTRACT MILESTONE
+// =============================================================================
+
+model ContractMilestone {
+  id              String          @id @default(uuid()) @map("id")
+  contractId      String          @map("contract_id")
+  title           String          @db.VarChar(200)
+  description     String?         @db.Text
+  percentage      Decimal         @map("percentage") @db.Decimal(5, 2)
+  status          MilestoneStatus @default(PENDING) @map("status")
+  reachedAt       DateTime?       @map("reached_at")
+  celebratedAt    DateTime?       @map("celebrated_at")
+  rewardDetails   String?         @map("reward_details") @db.Text
+  metadata        Json?           @map("metadata")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  contract RentToOwnContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+  @@index([status])
+  @@map("contract_milestones")
+}
+
+// =============================================================================
+// ACCIDENT MANAGEMENT
+// =============================================================================
+
+model AccidentReport {
+  id                  String           @id @default(uuid()) @map("id")
+  customerId          String           @map("customer_id")
+  userId              String           @map("user_id")
+  vehicleId           String           @map("vehicle_id")
+  reportNumber        String           @unique @map("report_number") @db.VarChar(50)
+  status              AccidentStatus   @default(REPORTED) @map("status")
+  severity            AccidentSeverity @map("severity")
+  occurredAt          DateTime         @map("occurred_at")
+  latitude            Float?           @map("latitude")
+  longitude           Float?           @map("longitude")
+  locationDescription String?          @map("location_description") @db.Text
+  description         String           @db.Text
+  driverInjured       Boolean          @default(false) @map("driver_injured")
+  driverInjuryDetails String?          @map("driver_injury_details") @db.Text
+  thirdPartyInvolved  Boolean          @default(false) @map("third_party_involved")
+  thirdPartyName      String?          @map("third_party_name") @db.VarChar(200)
+  thirdPartyPhone     String?          @map("third_party_phone") @db.VarChar(30)
+  thirdPartyVehicle   String?          @map("third_party_vehicle") @db.VarChar(100)
+  thirdPartyInsurance String?          @map("third_party_insurance") @db.VarChar(200)
+  policeReportNumber  String?          @map("police_report_number") @db.VarChar(100)
+  estimatedDamage     Decimal?         @map("estimated_damage") @db.Decimal(12, 2)
+  repairCost          Decimal?         @map("repair_cost") @db.Decimal(12, 2)
+  insuranceClaim      Boolean          @default(false) @map("insurance_claim")
+  insuranceClaimNumber String?         @map("insurance_claim_number") @db.VarChar(100)
+  assignedToId        String?          @map("assigned_to_id")
+  resolvedAt          DateTime?        @map("resolved_at")
+  resolutionNotes     String?          @map("resolution_notes") @db.Text
+  metadata            Json?            @map("metadata")
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  customer   Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user       User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle    Vehicle               @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  assignedTo Admin?                @relation("AccidentAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  media      AccidentReportMedia[]
+  notes      AccidentReportNote[]
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([status])
+  @@index([severity])
+  @@map("accident_reports")
+}
+
+model AccidentReportMedia {
+  id               String            @id @default(uuid()) @map("id")
+  accidentReportId String            @map("accident_report_id")
+  type             AccidentMediaType @map("type")
+  fileUrl          String            @map("file_url") @db.Text
+  fileName         String            @map("file_name") @db.VarChar(255)
+  fileSize         Int?              @map("file_size")
+  mimeType         String?           @map("mime_type") @db.VarChar(100)
+  caption          String?           @db.Text
+  metadata         Json?             @map("metadata")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  accidentReport AccidentReport @relation(fields: [accidentReportId], references: [id], onDelete: Cascade)
+
+  @@index([accidentReportId])
+  @@map("accident_report_media")
+}
+
+model AccidentReportNote {
+  id               String   @id @default(uuid()) @map("id")
+  accidentReportId String   @map("accident_report_id")
+  adminId          String   @map("admin_id")
+  content          String   @db.Text
+  isInternal       Boolean  @default(true) @map("is_internal")
+  metadata         Json?    @map("metadata")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  accidentReport AccidentReport @relation(fields: [accidentReportId], references: [id], onDelete: Cascade)
+  admin          Admin          @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([accidentReportId])
+  @@index([adminId])
+  @@map("accident_report_notes")
+}
+
+// =============================================================================
+// GPS & GEOFENCING
+// =============================================================================
+
+model TelemetryEvent {
+  id          String             @id @default(uuid()) @map("id")
+  userId      String?            @map("user_id")
+  vehicleId   String             @map("vehicle_id")
+  type        TelemetryEventType @map("type")
+  latitude    Float              @map("latitude")
+  longitude   Float              @map("longitude")
+  speed       Float?             @map("speed")
+  heading     Float?             @map("heading")
+  altitude    Float?             @map("altitude")
+  accuracy    Float?             @map("accuracy")
+  value       Float?             @map("value")
+  address     String?            @db.Text
+  metadata    Json?              @map("metadata")
+  recordedAt  DateTime           @map("recorded_at")
+  createdAt   DateTime           @default(now()) @map("created_at")
+
+  // Relations
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([userId])
+  @@index([type])
+  @@index([recordedAt])
+  @@index([vehicleId, recordedAt])
+  @@map("telemetry_events")
+}
+
+model GeofenceZone {
+  id          String       @id @default(uuid()) @map("id")
+  customerId  String       @map("customer_id")
+  name        String       @db.VarChar(200)
+  description String?      @db.Text
+  type        GeofenceType @map("type")
+  centerLat   Float?       @map("center_lat")
+  centerLng   Float?       @map("center_lng")
+  radiusMeters Float?      @map("radius_meters")
+  polygon     Json?        @map("polygon")
+  isActive    Boolean      @default(true) @map("is_active")
+  color       String?      @db.VarChar(7)
+  metadata    Json?        @map("metadata")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  customer Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  alerts   GeofenceAlert[]
+
+  @@index([customerId])
+  @@index([isActive])
+  @@map("geofence_zones")
+}
+
+model GeofenceAlert {
+  id             String           @id @default(uuid()) @map("id")
+  geofenceZoneId String           @map("geofence_zone_id")
+  userId         String           @map("user_id")
+  type           GeofenceAlertType @map("type")
+  latitude       Float            @map("latitude")
+  longitude      Float            @map("longitude")
+  triggeredAt    DateTime         @map("triggered_at")
+  acknowledged   Boolean          @default(false) @map("acknowledged")
+  acknowledgedAt DateTime?        @map("acknowledged_at")
+  metadata       Json?            @map("metadata")
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  geofenceZone GeofenceZone @relation(fields: [geofenceZoneId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([geofenceZoneId])
+  @@index([userId])
+  @@index([triggeredAt])
+  @@map("geofence_alerts")
+}
+
+// =============================================================================
+// INCOME TRACKING
+// =============================================================================
+
+model IncomeRecord {
+  id          String       @id @default(uuid()) @map("id")
+  customerId  String       @map("customer_id")
+  userId      String       @map("user_id")
+  source      IncomeSource @map("source")
+  amount      Decimal      @map("amount") @db.Decimal(12, 2)
+  currency    String       @default("XOF") @db.VarChar(3)
+  trips       Int?         @map("trips")
+  hoursOnline Float?       @map("hours_online")
+  periodStart DateTime     @map("period_start")
+  periodEnd   DateTime     @map("period_end")
+  syncedAt    DateTime?    @map("synced_at")
+  isVerified  Boolean      @default(false) @map("is_verified")
+  rawData     Json?        @map("raw_data")
+  metadata    Json?        @map("metadata")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([source])
+  @@index([periodStart, periodEnd])
+  @@map("income_records")
+}
+
+// =============================================================================
+// SUPPORT
+// =============================================================================
+
+model SupportTicket {
+  id           String         @id @default(uuid()) @map("id")
+  customerId   String         @map("customer_id")
+  userId       String         @map("user_id")
+  ticketNumber String         @unique @map("ticket_number") @db.VarChar(50)
+  category     TicketCategory @map("category")
+  priority     TicketPriority @default(MEDIUM) @map("priority")
+  status       TicketStatus   @default(OPEN) @map("status")
+  subject      String         @db.VarChar(500)
+  description  String         @db.Text
+  assignedToId String?        @map("assigned_to_id")
+  assignedAt   DateTime?      @map("assigned_at")
+  resolvedAt   DateTime?      @map("resolved_at")
+  closedAt     DateTime?      @map("closed_at")
+  satisfaction Int?           @map("satisfaction")
+  metadata     Json?          @map("metadata")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  customer   Customer               @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user       User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo Admin?                 @relation("TicketAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  messages   SupportTicketMessage[]
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([ticketNumber])
+  @@map("support_tickets")
+}
+
+model SupportTicketMessage {
+  id             String     @id @default(uuid()) @map("id")
+  ticketId       String     @map("ticket_id")
+  senderType     SenderType @map("sender_type")
+  senderId       String     @map("sender_id") @db.VarChar(255)
+  adminId        String?    @map("admin_id")
+  content        String     @db.Text
+  attachmentUrl  String?    @map("attachment_url") @db.Text
+  attachmentName String?    @map("attachment_name") @db.VarChar(255)
+  isInternal     Boolean    @default(false) @map("is_internal")
+  metadata       Json?      @map("metadata")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  admin  Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([ticketId])
+  @@index([adminId])
+  @@map("support_ticket_messages")
+}
+
+// =============================================================================
+// CREDIT SCORING
+// =============================================================================
+
+model CreditScoreHistory {
+  id                    String   @id @default(uuid()) @map("id")
+  customerId            String   @map("customer_id")
+  userId                String   @map("user_id")
+  score                 Int      @map("score")
+  previousScore         Int?     @map("previous_score")
+  paymentHistoryScore   Float?   @map("payment_history_score")
+  incomeStabilityScore  Float?   @map("income_stability_score")
+  drivingBehaviorScore  Float?   @map("driving_behavior_score")
+  vehicleCareScore      Float?   @map("vehicle_care_score")
+  tenureScore           Float?   @map("tenure_score")
+  kycCompletionScore    Float?   @map("kyc_completion_score")
+  accidentScore         Float?   @map("accident_score")
+  factors               Json?    @map("factors")
+  calculatedAt          DateTime @map("calculated_at")
+  metadata              Json?    @map("metadata")
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([calculatedAt])
+  @@index([userId, calculatedAt])
+  @@map("credit_score_histories")
+}
+
+model ScoringConfig {
+  id                      String   @id @default(uuid()) @map("id")
+  customerId              String   @map("customer_id")
+  name                    String   @db.VarChar(200)
+  isActive                Boolean  @default(true) @map("is_active")
+  paymentHistoryWeight    Float    @default(0.30) @map("payment_history_weight")
+  incomeStabilityWeight   Float    @default(0.20) @map("income_stability_weight")
+  drivingBehaviorWeight   Float    @default(0.15) @map("driving_behavior_weight")
+  vehicleCareWeight       Float    @default(0.10) @map("vehicle_care_weight")
+  tenureWeight            Float    @default(0.10) @map("tenure_weight")
+  kycCompletionWeight     Float    @default(0.10) @map("kyc_completion_weight")
+  accidentWeight          Float    @default(0.05) @map("accident_weight")
+  minScore                Int      @default(0) @map("min_score")
+  maxScore                Int      @default(850) @map("max_score")
+  metadata                Json?    @map("metadata")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([isActive])
+  @@map("scoring_configs")
+}
+
+// =============================================================================
+// GAMIFICATION
+// =============================================================================
+
+model BadgeDefinition {
+  id           String   @id @default(uuid()) @map("id")
+  customerId   String   @map("customer_id")
+  name         String   @db.VarChar(200)
+  description  String   @db.Text
+  iconUrl      String?  @map("icon_url") @db.Text
+  category     String   @db.VarChar(100)
+  criteria     Json     @map("criteria")
+  isActive     Boolean  @default(true) @map("is_active")
+  sortOrder    Int      @default(0) @map("sort_order")
+  metadata     Json?    @map("metadata")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  driverBadges DriverBadge[]
+
+  @@index([customerId])
+  @@index([isActive])
+  @@map("badge_definitions")
+}
+
+model DriverBadge {
+  id                String   @id @default(uuid()) @map("id")
+  userId            String   @map("user_id")
+  badgeDefinitionId String   @map("badge_definition_id")
+  earnedAt          DateTime @default(now()) @map("earned_at")
+  metadata          Json?    @map("metadata")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeDefinition BadgeDefinition @relation(fields: [badgeDefinitionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeDefinitionId])
+  @@index([userId])
+  @@index([badgeDefinitionId])
+  @@map("driver_badges")
+}
+
+model DriverFavorite {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  vehicleId String   @map("vehicle_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vehicleId])
+  @@index([userId])
+  @@index([vehicleId])
+  @@map("driver_favorites")
+}
+
+// =============================================================================
+// AUTH & SECURITY
+// =============================================================================
+
+model LoginActivity {
+  id          String   @id @default(uuid()) @map("id")
+  userId      String?  @map("user_id")
+  adminId     String?  @map("admin_id")
+  ipAddress   String?  @map("ip_address") @db.VarChar(45)
+  userAgent   String?  @map("user_agent") @db.Text
+  device      String?  @db.VarChar(255)
+  location    String?  @db.VarChar(255)
+  success     Boolean  @map("success")
+  failureReason String? @map("failure_reason") @db.Text
+  metadata    Json?    @map("metadata")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user  User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  admin Admin? @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([adminId])
+  @@index([createdAt])
+  @@map("login_activities")
+}
+
+model DeviceToken {
+  id        String         @id @default(uuid()) @map("id")
+  userId    String         @map("user_id")
+  token     String         @unique @db.Text
+  platform  DevicePlatform @map("platform")
+  deviceName String?       @map("device_name") @db.VarChar(255)
+  isActive  Boolean        @default(true) @map("is_active")
+  lastUsedAt DateTime?     @map("last_used_at")
+  metadata  Json?          @map("metadata")
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("device_tokens")
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  endpoint  String   @unique @db.Text
+  p256dh    String   @db.Text
+  auth      String   @db.VarChar(255)
+  isActive  Boolean  @default(true) @map("is_active")
+  metadata  Json?    @map("metadata")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("push_subscriptions")
+}
+
+model Bank {
+  id        String   @id @default(uuid()) @map("id")
+  name      String   @db.VarChar(200)
+  code      String   @unique @db.VarChar(20)
+  swiftCode String?  @map("swift_code") @db.VarChar(20)
+  country   String   @default("CI") @db.VarChar(2)
+  isActive  Boolean  @default(true) @map("is_active")
+  logoUrl   String?  @map("logo_url") @db.Text
+  metadata  Json?    @map("metadata")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([country])
+  @@index([isActive])
+  @@map("banks")
+}
+
+// =============================================================================
+// ADMIN PREFERENCES
+// =============================================================================
+
+model AdminPreference {
+  id                    String          @id @default(uuid()) @map("id")
+  adminId               String          @unique @map("admin_id")
+  theme                 ThemePreference @default(SYSTEM) @map("theme")
+  emailDigest           EmailDigest     @default(DAILY) @map("email_digest")
+  notifyNewDrivers      Boolean         @default(true) @map("notify_new_drivers")
+  notifyKycSubmissions  Boolean         @default(true) @map("notify_kyc_submissions")
+  notifyLoanApplications Boolean        @default(true) @map("notify_loan_applications")
+  notifyPayments        Boolean         @default(false) @map("notify_payments")
+  notifyAccidents       Boolean         @default(true) @map("notify_accidents")
+  notifySupportTickets  Boolean         @default(true) @map("notify_support_tickets")
+  language              String          @default("fr") @db.VarChar(5)
+  metadata              Json?           @map("metadata")
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@map("admin_preferences")
+}
+
+// =============================================================================
+// FEATURE FLAGS
+// =============================================================================
+
+model FeatureFlag {
+  id          String   @id @default(uuid()) @map("id")
+  customerId  String?  @map("customer_id")
+  key         String   @db.VarChar(200)
+  name        String   @db.VarChar(200)
+  description String?  @db.Text
+  isEnabled   Boolean  @default(false) @map("is_enabled")
+  percentage  Int?     @map("percentage")
+  conditions  Json?    @map("conditions")
+  metadata    Json?    @map("metadata")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  customer  Customer?              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  auditLogs FeatureFlagAuditLog[]
+
+  @@unique([customerId, key])
+  @@index([customerId])
+  @@index([key])
+  @@index([isEnabled])
+  @@map("feature_flags")
+}
+
+model FeatureFlagAuditLog {
+  id            String   @id @default(uuid()) @map("id")
+  featureFlagId String   @map("feature_flag_id")
+  adminId       String   @map("admin_id")
+  action        String   @db.VarChar(50)
+  oldValue      Json?    @map("old_value")
+  newValue      Json?    @map("new_value")
+  reason        String?  @db.Text
+  metadata      Json?    @map("metadata")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  featureFlag FeatureFlag @relation(fields: [featureFlagId], references: [id], onDelete: Cascade)
+  admin       Admin       @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([featureFlagId])
+  @@index([adminId])
+  @@index([createdAt])
+  @@map("feature_flag_audit_logs")
+}
+
+// =============================================================================
+// ACTIVITY LOG
+// =============================================================================
+
+model ActivityLog {
+  id          String    @id @default(uuid()) @map("id")
+  customerId  String?   @map("customer_id")
+  userId      String?   @map("user_id")
+  adminId     String?   @map("admin_id")
+  actorType   ActorType @map("actor_type")
+  action      String    @db.VarChar(200)
+  resource    String    @db.VarChar(200)
+  resourceId  String?   @map("resource_id") @db.VarChar(255)
+  description String?   @db.Text
+  ipAddress   String?   @map("ip_address") @db.VarChar(45)
+  userAgent   String?   @map("user_agent") @db.Text
+  oldData     Json?     @map("old_data")
+  newData     Json?     @map("new_data")
+  metadata    Json?     @map("metadata")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  admin    Admin?    @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([adminId])
+  @@index([actorType])
   @@index([action])
+  @@index([resource])
   @@index([createdAt])
   @@map("activity_logs")
+}
+
+// =============================================================================
+// AI
+// =============================================================================
+
+model AIUsageLog {
+  id          String   @id @default(uuid()) @map("id")
+  customerId  String   @map("customer_id")
+  feature     String   @db.VarChar(200)
+  model       String   @db.VarChar(100)
+  inputTokens Int      @default(0) @map("input_tokens")
+  outputTokens Int     @default(0) @map("output_tokens")
+  latencyMs   Int?     @map("latency_ms")
+  success     Boolean  @default(true) @map("success")
+  errorMessage String? @map("error_message") @db.Text
+  metadata    Json?    @map("metadata")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([feature])
+  @@index([createdAt])
+  @@map("ai_usage_logs")
+}
+
+model AIExplanation {
+  id             String   @id @default(uuid()) @map("id")
+  userId         String   @map("user_id")
+  type           String   @db.VarChar(100)
+  referenceId    String?  @map("reference_id") @db.VarChar(255)
+  explanation    String   @db.Text
+  language       String   @default("fr") @db.VarChar(5)
+  generatedAt    DateTime @map("generated_at")
+  expiresAt      DateTime? @map("expires_at")
+  metadata       Json?    @map("metadata")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([referenceId])
+  @@map("ai_explanations")
+}
+
+// =============================================================================
+// NOTIFICATIONS
+// =============================================================================
+
+model Notification {
+  id          String           @id @default(uuid()) @map("id")
+  customerId  String           @map("customer_id")
+  userId      String           @map("user_id")
+  type        NotificationType @map("type")
+  title       String           @db.VarChar(500)
+  body        String           @db.Text
+  data        Json?            @map("data")
+  isRead      Boolean          @default(false) @map("is_read")
+  readAt      DateTime?        @map("read_at")
+  sentAt      DateTime?        @map("sent_at")
+  channel     String?          @db.VarChar(50)
+  metadata    Json?            @map("metadata")
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// =============================================================================
+// SETTINGS
+// =============================================================================
+
+model Setting {
+  id          String   @id @default(uuid()) @map("id")
+  customerId  String?  @map("customer_id")
+  key         String   @db.VarChar(200)
+  value       String   @db.Text
+  type        String   @default("string") @db.VarChar(20)
+  description String?  @db.Text
+  isPublic    Boolean  @default(false) @map("is_public")
+  metadata    Json?    @map("metadata")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, key])
+  @@index([customerId])
+  @@index([key])
+  @@map("settings")
 }

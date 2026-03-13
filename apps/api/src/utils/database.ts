@@ -1,44 +1,24 @@
 import { PrismaClient } from '@prisma/client';
-import { logger } from './logger';
-import { config } from '../config';
 
-// Prisma client singleton
-let prisma: PrismaClient;
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
-/**
- * Get Prisma client instance
- */
-export const getPrismaClient = (): PrismaClient => {
-  if (!prisma) {
-    prisma = new PrismaClient({
-      log: config.isDevelopment
+export const db =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log:
+      process.env.NODE_ENV === 'development'
         ? ['query', 'info', 'warn', 'error']
         : ['warn', 'error'],
-    });
+  });
 
-    // Log successful connection
-    prisma.$connect().then(() => {
-      logger.info('✅ Database connected successfully');
-    }).catch((error) => {
-      logger.error('❌ Database connection failed:', error);
-      process.exit(1);
-    });
-  }
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = db;
+}
 
-  return prisma;
-};
+export async function disconnectDatabase(): Promise<void> {
+  await db.$disconnect();
+}
 
-/**
- * Disconnect from database
- */
-export const disconnectDatabase = async (): Promise<void> => {
-  if (prisma) {
-    await prisma.$disconnect();
-    logger.info('Database disconnected');
-  }
-};
-
-// Export prisma instance
-export const db = getPrismaClient();
-
-export default db;
+export async function connectDatabase(): Promise<void> {
+  await db.$connect();
+}

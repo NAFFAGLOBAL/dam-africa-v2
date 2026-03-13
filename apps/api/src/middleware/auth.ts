@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken, extractTokenFromHeader, JwtPayload } from '../utils/auth';
+import { verifyToken, extractTokenFromHeader } from '../utils/auth';
 import { UnauthorizedError, ForbiddenError } from '../utils/errors';
 import { db } from '../utils/database';
-import { AdminRole } from '@prisma/client';
 
-// Extend Express Request type to include user
 declare global {
   namespace Express {
     interface Request {
@@ -12,179 +10,134 @@ declare global {
         id: string;
         email: string;
         type: 'user' | 'admin';
-        role?: AdminRole;
+        role?: string;
+        customerId?: string;
       };
     }
   }
 }
 
-/**
- * Authenticate user (driver) middleware
- */
 export const authenticateUser = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  next: NextFunction,
 ): Promise<void> => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = extractTokenFromHeader(authHeader);
-
+    const token = extractTokenFromHeader(req.headers.authorization);
     if (!token) {
-      throw new UnauthorizedError('Access token required');
+      throw new UnauthorizedError('Token manquant');
     }
 
-    const payload: JwtPayload = verifyToken(token);
-
-    if (payload.type !== 'access') {
-      throw new UnauthorizedError('Invalid token type');
+    const payload = verifyToken(token);
+    if (payload.type !== 'user') {
+      throw new UnauthorizedError('Token invalide pour cet endpoint');
     }
 
-    // Fetch user from database
     const user = await db.user.findUnique({
-      where: { id: payload.userId },
-      select: {
-        id: true,
-        email: true,
-        status: true,
-      },
+      where: { id: payload.id },
+      select: { id: true, email: true, status: true, customerId: true },
     });
 
     if (!user) {
-      throw new UnauthorizedError('User not found');
+      throw new UnauthorizedError('Utilisateur introuvable');
     }
 
-    if (user.status !== 'ACTIVE') {
-      throw new UnauthorizedError('Account is suspended or deleted');
+    if (user.status === 'SUSPENDED' || user.status === 'INACTIVE') {
+      throw new ForbiddenError('Compte suspendu ou inactif');
     }
 
-    // Attach user to request
     req.user = {
       id: user.id,
       email: user.email,
       type: 'user',
+      customerId: user.customerId ?? undefined,
     };
 
     next();
   } catch (error) {
-    next(error);
+    next(error instanceof UnauthorizedError || error instanceof ForbiddenError
+      ? error
+      : new UnauthorizedError('Token invalide ou expiré'));
   }
 };
 
-/**
- * Authenticate admin middleware
- */
 export const authenticateAdmin = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  next: NextFunction,
 ): Promise<void> => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = extractTokenFromHeader(authHeader);
-
+    const token = extractTokenFromHeader(req.headers.authorization);
     if (!token) {
-      throw new UnauthorizedError('Access token required');
+      throw new UnauthorizedError('Token manquant');
     }
 
-    const payload: JwtPayload = verifyToken(token);
-
-    if (payload.type !== 'access') {
-      throw new UnauthorizedError('Invalid token type');
+    const payload = verifyToken(token);
+    if (payload.type !== 'admin') {
+      throw new UnauthorizedError('Accès administrateur requis');
     }
 
-    // Fetch admin from database
     const admin = await db.admin.findUnique({
-      where: { id: payload.userId },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        status: true,
-      },
+      where: { id: payload.id },
+      select: { id: true, email: true, role: true, isActive: true, customerId: true },
     });
 
     if (!admin) {
-      throw new UnauthorizedError('Admin not found');
+      throw new UnauthorizedError('Administrateur introuvable');
     }
 
-    if (admin.status !== 'ACTIVE') {
-      throw new UnauthorizedError('Admin account is inactive');
+    if (!admin.isActive) {
+      throw new ForbiddenError('Compte administrateur désactivé');
     }
 
-    // Attach admin to request
     req.user = {
       id: admin.id,
       email: admin.email,
       type: 'admin',
       role: admin.role,
+      customerId: admin.customerId ?? undefined,
     };
 
     next();
   } catch (error) {
-    next(error);
+    next(error instanceof UnauthorizedError || error instanceof ForbiddenError
+      ? error
+      : new UnauthorizedError('Token invalide ou expiré'));
   }
 };
 
-/**
- * Authorize admin by role(s)
- */
-export const authorizeAdmin = (...allowedRoles: AdminRole[]) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+export const authorizeAdmin = (...roles: string[]) => {
+  return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user || req.user.type !== 'admin') {
-      throw new ForbiddenError('Admin access required');
+      return next(new ForbiddenError('Accès administrateur requis'));
     }
-
-    if (!req.user.role) {
-      throw new ForbiddenError('Role not found');
+    if (roles.length > 0 && (!req.user.role || !roles.includes(req.user.role))) {
+      return next(new ForbiddenError('Rôle insuffisant pour cette action'));
     }
-
-    if (!allowedRoles.includes(req.user.role)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
-
     next();
   };
 };
 
-/**
- * Optionally authenticate (attach user if token present, but don't require it)
- */
 export const optionalAuth = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  next: NextFunction,
 ): Promise<void> => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = extractTokenFromHeader(authHeader);
-
-    if (token) {
-      const payload: JwtPayload = verifyToken(token);
-
-      if (payload.type === 'access') {
-        const user = await db.user.findUnique({
-          where: { id: payload.userId },
-          select: {
-            id: true,
-            email: true,
-            status: true,
-          },
-        });
-
-        if (user && user.status === 'ACTIVE') {
-          req.user = {
-            id: user.id,
-            email: user.email,
-            type: 'user',
-          };
-        }
-      }
+    const token = extractTokenFromHeader(req.headers.authorization);
+    if (!token) {
+      return next();
     }
-
-    next();
-  } catch (error) {
-    // Silently continue if authentication fails
-    next();
+    const payload = verifyToken(token);
+    req.user = {
+      id: payload.id,
+      email: payload.email,
+      type: payload.type,
+      role: payload.role,
+      customerId: payload.customerId,
+    };
+  } catch {
+    // Token invalid — continue without auth
   }
+  next();
 };

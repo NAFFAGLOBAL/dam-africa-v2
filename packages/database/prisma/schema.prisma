@@ -114,6 +114,12 @@ enum AccidentStatus {
   CLOSED
 }
 
+enum DriverFault {
+  NOT_DETERMINED
+  DRIVER_AT_FAULT
+  DRIVER_NOT_AT_FAULT
+}
+
 enum TicketStatus {
   OPEN
   IN_PROGRESS
@@ -597,23 +603,28 @@ model ContractMilestone {
 // ============================================================
 
 model AccidentReport {
-  id          String           @id @default(uuid())
-  userId      String
-  vehicleId   String
-  severity    AccidentSeverity
-  status      AccidentStatus   @default(REPORTED)
-  location    String?
-  latitude    Float?
-  longitude   Float?
-  description String
-  occurredAt  DateTime
-  reportedAt  DateTime         @default(now())
-  damageCost  Float?
-  insuranceClaim String?
-  resolvedAt  DateTime?
-  resolvedBy  String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id                String           @id @default(uuid())
+  userId            String
+  vehicleId         String
+  severity          AccidentSeverity @default(MINOR)
+  status            AccidentStatus   @default(REPORTED)
+  driverFault       DriverFault      @default(NOT_DETERMINED)
+  location          String?
+  latitude          Float?
+  longitude         Float?
+  description       String?
+  thirdPartyInvolved Boolean         @default(false)
+  policeReportUrl   String?
+  policeReportNumber String?
+  occurredAt        DateTime
+  reportedAt        DateTime         @default(now())
+  damageCost        Float?
+  insuranceClaim    String?
+  creditScoreImpact Int?
+  resolvedAt        DateTime?
+  resolvedBy        String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 
   user    User    @relation(fields: [userId], references: [id])
   vehicle Vehicle @relation(fields: [vehicleId], references: [id])
@@ -623,6 +634,8 @@ model AccidentReport {
   @@index([userId])
   @@index([vehicleId])
   @@index([status])
+  @@index([driverFault])
+  @@index([latitude, longitude])
   @@map("accident_reports")
 }
 

@@ -213,15 +213,23 @@ enum AccidentSeverity {
   MINOR
   MODERATE
   SEVERE
+  TOTAL_LOSS
   FATAL
 }
 
 enum AccidentStatus {
   REPORTED
+  INVESTIGATING
   UNDER_INVESTIGATION
   RESOLVED
   CLOSED
   DISPUTED
+}
+
+enum DriverFault {
+  NOT_DETERMINED
+  DRIVER_AT_FAULT
+  DRIVER_NOT_AT_FAULT
 }
 
 enum AccidentMediaType {
@@ -884,8 +892,12 @@ model AccidentReport {
   repairCost          Decimal?         @map("repair_cost") @db.Decimal(12, 2)
   insuranceClaim      Boolean          @default(false) @map("insurance_claim")
   insuranceClaimNumber String?         @map("insurance_claim_number") @db.VarChar(100)
+  driverFault         DriverFault      @default(NOT_DETERMINED) @map("driver_fault")
+  policeReportUrl     String?          @map("police_report_url") @db.Text
+  creditScoreImpact   Int?             @map("credit_score_impact")
   assignedToId        String?          @map("assigned_to_id")
   resolvedAt          DateTime?        @map("resolved_at")
+  resolvedBy          String?          @map("resolved_by")
   resolutionNotes     String?          @map("resolution_notes") @db.Text
   metadata            Json?            @map("metadata")
   createdAt           DateTime         @default(now()) @map("created_at")

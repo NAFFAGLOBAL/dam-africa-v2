@@ -124,12 +124,24 @@ export const trackingApi = {
     api.get(`/tracking/vehicles/${id}/history`, { params }),
 };
 
-// ─── Incidents ───────────────────────────────────────────────────────
+// ─── Incidents / Accidents ───────────────────────────────────────────
 export const incidentsApi = {
-  list: (params?: Record<string, unknown>) => api.get('/incidents', { params }),
-  get: (id: string) => api.get(`/incidents/${id}`),
+  list: (params?: Record<string, unknown>) => api.get('/accidents', { params }),
+  get: (id: string) => api.get(`/accidents/${id}`),
+  addMedia: (id: string, data: { fileUrl: string; fileType: string; caption?: string }) =>
+    api.post(`/accidents/${id}/media`, data),
+  addNote: (id: string, content: string) =>
+    api.post(`/accidents/${id}/notes`, { content }),
+  updateSeverity: (id: string, severity: string) =>
+    api.patch(`/accidents/${id}/severity`, { severity }),
+  attachPoliceReport: (id: string, data: { policeReportUrl: string; policeReportNumber?: string }) =>
+    api.patch(`/accidents/${id}/police-report`, data),
+  determineResponsibility: (id: string, data: { driverFault: string; creditScoreImpact?: number }) =>
+    api.patch(`/accidents/${id}/responsibility`, data),
   updateStatus: (id: string, status: string) =>
-    api.patch(`/incidents/${id}/status`, { status }),
+    api.patch(`/accidents/${id}/status`, { status }),
+  getRiskZones: (params?: Record<string, unknown>) =>
+    api.get('/accidents/risk-zones', { params }),
 };
 
 // ─── Support ─────────────────────────────────────────────────────────

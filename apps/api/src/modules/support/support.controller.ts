@@ -15,7 +15,7 @@ export class SupportController {
   });
 
   listTickets = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, priority, userId, assigneeId } = req.query as {
+    const { page, limit, status, priority, userId, assigneeId } = req.query as unknown as {
       page: number; limit: number; status?: string; priority?: string; userId?: string; assigneeId?: string;
     };
     const { tickets, total } = await supportService.listTickets({ page, limit, status, priority, userId, assigneeId });

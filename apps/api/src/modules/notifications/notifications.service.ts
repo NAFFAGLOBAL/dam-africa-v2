@@ -11,7 +11,7 @@ export class NotificationsService {
   }) {
     const where: Prisma.NotificationWhereInput = { userId };
     if (params.isRead !== undefined) where.isRead = params.isRead;
-    if (params.type) where.type = params.type as Prisma.EnumNotificationTypeFilter['equals'];
+    if (params.type) where.type = params.type as any;
 
     const [notifications, total] = await Promise.all([
       db.notification.findMany({
@@ -67,7 +67,7 @@ export class NotificationsService {
     return db.notification.create({
       data: {
         userId,
-        type: type as Prisma.EnumNotificationTypeFilter['equals'],
+        type: type as any,
         title,
         body,
         data: data as Prisma.InputJsonValue,

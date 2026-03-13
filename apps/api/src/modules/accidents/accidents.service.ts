@@ -1,5 +1,5 @@
 import { db } from '../../utils/database';
-import { NotFoundError, BadRequestError } from '../../utils/errors';
+import { NotFoundError } from '../../utils/errors';
 import { Prisma } from '@prisma/client';
 
 export class AccidentsService {
@@ -20,7 +20,7 @@ export class AccidentsService {
       data: {
         userId,
         vehicleId: data.vehicleId,
-        severity: data.severity as Prisma.EnumAccidentSeverityFilter['equals'],
+        severity: data.severity as any,
         location: data.location,
         latitude: data.latitude,
         longitude: data.longitude,
@@ -55,8 +55,8 @@ export class AccidentsService {
     vehicleId?: string;
   }) {
     const where: Prisma.AccidentReportWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumAccidentStatusFilter['equals'];
-    if (params.severity) where.severity = params.severity as Prisma.EnumAccidentSeverityFilter['equals'];
+    if (params.status) where.status = params.status as any;
+    if (params.severity) where.severity = params.severity as any;
     if (params.userId) where.userId = params.userId;
     if (params.vehicleId) where.vehicleId = params.vehicleId;
 
@@ -107,7 +107,7 @@ export class AccidentsService {
     return db.accidentReport.update({
       where: { id },
       data: {
-        status: data.status as Prisma.EnumAccidentStatusFilter['equals'],
+        status: data.status as any,
         damageCost: data.damageCost ?? report.damageCost,
         insuranceClaim: data.insuranceClaim,
         ...(data.status === 'RESOLVED' ? { resolvedAt: new Date(), resolvedBy } : {}),

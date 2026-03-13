@@ -46,7 +46,7 @@ export class RentalsService {
     vehicleId?: string;
   }) {
     const where: Prisma.RentalWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumRentalStatusFilter['equals'];
+    if (params.status) where.status = params.status as any;
     if (params.userId) where.userId = params.userId;
     if (params.vehicleId) where.vehicleId = params.vehicleId;
 

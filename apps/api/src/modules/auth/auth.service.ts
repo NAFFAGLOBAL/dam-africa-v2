@@ -14,8 +14,6 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '../../utils/errors';
-import { v4 as uuid } from 'uuid';
-
 export class AuthService {
   async register(data: {
     email: string;

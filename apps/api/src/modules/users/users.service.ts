@@ -31,7 +31,7 @@ export class UsersService {
     customerId?: string;
   }) {
     const where: Prisma.UserWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumUserStatusFilter['equals'];
+    if (params.status) where.status = params.status as any;
     if (params.customerId) where.customerId = params.customerId;
     if (params.search) {
       where.OR = [

@@ -10,7 +10,7 @@ export class KycController {
   });
 
   listDocuments = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, userId, type } = req.query as {
+    const { page, limit, status, userId, type } = req.query as unknown as {
       page: number; limit: number; status?: string; userId?: string; type?: string;
     };
     const { documents, total } = await kycService.listDocuments({ page, limit, status, userId, type });

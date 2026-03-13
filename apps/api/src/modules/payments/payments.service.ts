@@ -23,7 +23,7 @@ export class PaymentsService {
         contractId: data.contractId,
         amount: data.amount,
         currency: 'XOF',
-        method: data.method as Prisma.EnumPaymentMethodFilter['equals'],
+        method: data.method as any,
         reference,
         phone: data.phone,
         description: data.description,
@@ -55,10 +55,10 @@ export class PaymentsService {
     endDate?: string;
   }) {
     const where: Prisma.PaymentWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumPaymentStatusFilter['equals'];
+    if (params.status) where.status = params.status as any;
     if (params.userId) where.userId = params.userId;
     if (params.loanId) where.loanId = params.loanId;
-    if (params.method) where.method = params.method as Prisma.EnumPaymentMethodFilter['equals'];
+    if (params.method) where.method = params.method as any;
     if (params.startDate || params.endDate) {
       where.createdAt = {};
       if (params.startDate) where.createdAt.gte = new Date(params.startDate);

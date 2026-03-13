@@ -85,7 +85,7 @@ export class ReportsService {
     return { totalDrivers, byStatus, newDriversLast30Days: newDrivers, kycStats };
   }
 
-  async getFleetReport(params: DateRange) {
+  async getFleetReport(_params: DateRange) {
     const [byStatus, maintenanceCosts, topVehicles] = await Promise.all([
       db.vehicle.groupBy({ by: ['status'], _count: true }),
       db.maintenanceRecord.aggregate({ _sum: { cost: true }, _count: true }),

@@ -25,7 +25,7 @@ export class AdminController {
   });
 
   getAuditLog = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, action, resource, adminId, startDate, endDate } = req.query as {
+    const { page, limit, action, resource, adminId, startDate, endDate } = req.query as unknown as {
       page: number; limit: number; action?: string; resource?: string; adminId?: string; startDate?: string; endDate?: string;
     };
     const { logs, total } = await adminService.getAuditLog({ page, limit, action, resource, adminId, startDate, endDate });

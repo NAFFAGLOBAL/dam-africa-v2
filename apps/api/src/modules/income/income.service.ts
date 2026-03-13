@@ -15,7 +15,7 @@ export class IncomeService {
     return db.incomeRecord.create({
       data: {
         userId,
-        source: data.source as Prisma.EnumIncomeSourceFilter['equals'],
+        source: data.source as any,
         amount: data.amount,
         currency: 'XOF',
         date: new Date(data.date),
@@ -38,7 +38,7 @@ export class IncomeService {
   }) {
     const where: Prisma.IncomeRecordWhereInput = {};
     if (params.userId) where.userId = params.userId;
-    if (params.source) where.source = params.source as Prisma.EnumIncomeSourceFilter['equals'];
+    if (params.source) where.source = params.source as any;
     if (params.isVerified !== undefined) where.isVerified = params.isVerified;
     if (params.startDate || params.endDate) {
       where.date = {};
@@ -119,7 +119,7 @@ export class IncomeService {
   }>) {
     const data = records.map((r) => ({
       userId: r.userId,
-      source: r.source as Prisma.EnumIncomeSourceFilter['equals'],
+      source: r.source as any,
       amount: r.amount,
       currency: 'XOF',
       date: new Date(r.date),

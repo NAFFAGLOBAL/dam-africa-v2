@@ -1,5 +1,5 @@
 import { db } from '../../utils/database';
-import { NotFoundError, BadRequestError, ForbiddenError } from '../../utils/errors';
+import { NotFoundError, BadRequestError } from '../../utils/errors';
 import { Prisma } from '@prisma/client';
 
 export class LoansService {
@@ -56,7 +56,7 @@ export class LoansService {
         totalRepayment: Math.round(totalRepayment),
         purpose: data.purpose,
         creditScore: eligibility.creditScore,
-        creditRating: eligibility.creditRating as Prisma.EnumCreditRatingFilter['equals'],
+        creditRating: eligibility.creditRating as any,
         status: 'PENDING',
       },
     });
@@ -102,7 +102,7 @@ export class LoansService {
     customerId?: string;
   }) {
     const where: Prisma.LoanWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumLoanStatusFilter['equals'];
+    if (params.status) where.status = params.status as any;
     if (params.userId) where.userId = params.userId;
     if (params.customerId) where.customerId = params.customerId;
 

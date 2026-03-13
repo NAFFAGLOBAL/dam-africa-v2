@@ -45,7 +45,7 @@ export class TrackingController {
   });
 
   getGeofenceAlerts = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, vehicleId, zoneId, acknowledged } = req.query as {
+    const { page, limit, vehicleId, zoneId, acknowledged } = req.query as unknown as {
       page: number; limit: number; vehicleId?: string; zoneId?: string; acknowledged?: boolean;
     };
     const { alerts, total } = await trackingService.getGeofenceAlerts({ page, limit, vehicleId, zoneId, acknowledged });

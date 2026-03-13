@@ -22,7 +22,7 @@ export class GamificationController {
   });
 
   getLeaderboard = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, period } = req.query as { page: number; limit: number; period: string };
+    const { page, limit, period } = req.query as unknown as { page: number; limit: number; period: string };
     const { leaderboard, total } = await gamificationService.getLeaderboard({ page, limit, period });
     sendPaginated(res, leaderboard, page, limit, total);
   });

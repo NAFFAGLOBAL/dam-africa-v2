@@ -10,7 +10,7 @@ export class CustomersController {
   });
 
   listCustomers = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, isActive, search } = req.query as {
+    const { page, limit, isActive, search } = req.query as unknown as {
       page: number; limit: number; isActive?: boolean; search?: string;
     };
     const { customers, total } = await customersService.listCustomers({ page, limit, isActive, search });

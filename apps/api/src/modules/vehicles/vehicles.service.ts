@@ -11,7 +11,7 @@ export class VehiclesService {
     search?: string;
   }) {
     const where: Prisma.VehicleWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumVehicleStatusFilter['equals'];
+    if (params.status) where.status = params.status as any;
     if (params.customerId) where.customerId = params.customerId;
     if (params.search) {
       where.OR = [

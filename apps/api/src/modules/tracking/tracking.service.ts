@@ -108,7 +108,7 @@ export class TrackingService {
     return db.geofenceZone.create({
       data: {
         name: data.name,
-        type: (data.type as Prisma.EnumGeofenceTypeFilter['equals']) || 'CUSTOM',
+        type: (data.type as any) || 'CUSTOM',
         coordinates: data.coordinates as Prisma.InputJsonValue,
         radius: data.radius,
         description: data.description,
@@ -131,7 +131,7 @@ export class TrackingService {
       where: { id },
       data: {
         name: data.name,
-        type: data.type as Prisma.EnumGeofenceTypeFilter['equals'],
+        type: data.type as any,
         coordinates: data.coordinates as Prisma.InputJsonValue,
         radius: data.radius,
         description: data.description,

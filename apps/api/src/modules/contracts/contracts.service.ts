@@ -29,7 +29,7 @@ export class ContractsService {
         userId: data.userId,
         vehicleId: data.vehicleId,
         customerId: user.customerId,
-        type: (data.type as Prisma.EnumContractTypeFilter['equals']) || 'RENT_TO_OWN',
+        type: (data.type as any) || 'RENT_TO_OWN',
         totalValue: data.totalValue,
         monthlyPayment: data.monthlyPayment,
         downPayment: data.downPayment ?? 0,
@@ -66,9 +66,9 @@ export class ContractsService {
     type?: string;
   }) {
     const where: Prisma.ContractWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumContractStatusFilter['equals'];
+    if (params.status) where.status = params.status as any;
     if (params.userId) where.userId = params.userId;
-    if (params.type) where.type = params.type as Prisma.EnumContractTypeFilter['equals'];
+    if (params.type) where.type = params.type as any;
 
     const [contracts, total] = await Promise.all([
       db.contract.findMany({
@@ -115,7 +115,7 @@ export class ContractsService {
         contractId,
         amount: data.amount,
         currency: 'XOF',
-        method: data.method as Prisma.EnumPaymentMethodFilter['equals'],
+        method: data.method as any,
         reference,
         phone: data.phone,
         status: 'COMPLETED',

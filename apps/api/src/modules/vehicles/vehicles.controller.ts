@@ -5,7 +5,7 @@ import { vehiclesService } from './vehicles.service';
 
 export class VehiclesController {
   listVehicles = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, customerId, search } = req.query as {
+    const { page, limit, status, customerId, search } = req.query as unknown as {
       page: number; limit: number; status?: string; customerId?: string; search?: string;
     };
     const { vehicles, total } = await vehiclesService.listVehicles({ page, limit, status, customerId, search });

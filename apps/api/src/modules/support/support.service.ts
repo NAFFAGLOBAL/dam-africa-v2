@@ -1,5 +1,5 @@
 import { db } from '../../utils/database';
-import { NotFoundError, BadRequestError } from '../../utils/errors';
+import { NotFoundError } from '../../utils/errors';
 import { Prisma } from '@prisma/client';
 
 export class SupportService {
@@ -14,7 +14,7 @@ export class SupportService {
         userId,
         subject: data.subject,
         description: data.description,
-        priority: (data.priority as Prisma.EnumTicketPriorityFilter['equals']) || 'MEDIUM',
+        priority: (data.priority as any) || 'MEDIUM',
         category: data.category,
         status: 'OPEN',
       },
@@ -43,8 +43,8 @@ export class SupportService {
     assigneeId?: string;
   }) {
     const where: Prisma.SupportTicketWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumTicketStatusFilter['equals'];
-    if (params.priority) where.priority = params.priority as Prisma.EnumTicketPriorityFilter['equals'];
+    if (params.status) where.status = params.status as any;
+    if (params.priority) where.priority = params.priority as any;
     if (params.userId) where.userId = params.userId;
     if (params.assigneeId) where.assigneeId = params.assigneeId;
 
@@ -93,7 +93,7 @@ export class SupportService {
     if (!ticket) throw new NotFoundError('Ticket introuvable');
 
     const data: Prisma.SupportTicketUpdateInput = {
-      status: status as Prisma.EnumTicketStatusFilter['equals'],
+      status: status as any,
     };
     if (status === 'RESOLVED') data.resolvedAt = new Date();
     if (status === 'CLOSED') data.closedAt = new Date();

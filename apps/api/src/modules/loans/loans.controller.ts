@@ -30,7 +30,7 @@ export class LoansController {
   });
 
   listLoans = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, userId, customerId } = req.query as {
+    const { page, limit, status, userId, customerId } = req.query as unknown as {
       page: number; limit: number; status?: string; userId?: string; customerId?: string;
     };
     const { loans, total } = await loansService.listLoans({ page, limit, status, userId, customerId });

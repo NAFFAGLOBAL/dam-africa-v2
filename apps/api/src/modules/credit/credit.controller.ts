@@ -10,7 +10,7 @@ export class CreditController {
   });
 
   getScoreHistory = asyncHandler(async (req: Request, res: Response) => {
-    const { page = 1, limit = 20 } = req.query as { page?: number; limit?: number };
+    const { page = 1, limit = 20 } = req.query as unknown as { page?: number; limit?: number };
     const userId = req.params.userId || req.user!.id;
     const { records, total } = await creditService.getScoreHistory(userId, Number(page), Number(limit));
     sendPaginated(res, records, Number(page), Number(limit), total);

@@ -10,7 +10,7 @@ export class RentalsController {
   });
 
   listRentals = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, userId, vehicleId } = req.query as {
+    const { page, limit, status, userId, vehicleId } = req.query as unknown as {
       page: number; limit: number; status?: string; userId?: string; vehicleId?: string;
     };
     const { rentals, total } = await rentalsService.listRentals({ page, limit, status, userId, vehicleId });

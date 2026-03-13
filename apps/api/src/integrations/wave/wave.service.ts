@@ -47,7 +47,7 @@ export class WaveService {
 
   async initiateCheckout(
     amount: number,
-    phone: string,
+    _phone: string,
     reference: string,
     successUrl?: string,
     errorUrl?: string,

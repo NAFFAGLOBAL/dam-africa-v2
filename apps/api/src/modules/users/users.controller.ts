@@ -5,7 +5,7 @@ import { usersService } from './users.service';
 
 export class UsersController {
   listUsers = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, search, customerId } = req.query as {
+    const { page, limit, status, search, customerId } = req.query as unknown as {
       page: number; limit: number; status?: string; search?: string; customerId?: string;
     };
     const { users, total } = await usersService.listUsers({ page, limit, status, search, customerId });

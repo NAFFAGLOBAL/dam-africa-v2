@@ -15,7 +15,7 @@ export class AccidentsController {
   });
 
   listAccidentReports = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, severity, userId, vehicleId } = req.query as {
+    const { page, limit, status, severity, userId, vehicleId } = req.query as unknown as {
       page: number; limit: number; status?: string; severity?: string; userId?: string; vehicleId?: string;
     };
     const { reports, total } = await accidentsService.listAccidentReports({ page, limit, status, severity, userId, vehicleId });

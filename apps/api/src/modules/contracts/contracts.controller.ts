@@ -15,7 +15,7 @@ export class ContractsController {
   });
 
   listContracts = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, userId, type } = req.query as {
+    const { page, limit, status, userId, type } = req.query as unknown as {
       page: number; limit: number; status?: string; userId?: string; type?: string;
     };
     const { contracts, total } = await contractsService.listContracts({ page, limit, status, userId, type });

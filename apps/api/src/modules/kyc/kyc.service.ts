@@ -13,7 +13,7 @@ export class KycService {
     return db.kYCDocument.create({
       data: {
         userId,
-        type: data.type as Prisma.EnumKYCDocumentTypeFilter['equals'],
+        type: data.type as any,
         fileUrl: data.fileUrl,
         fileName: data.fileName,
         expiresAt: data.expiresAt ? new Date(data.expiresAt) : undefined,
@@ -31,9 +31,9 @@ export class KycService {
     type?: string;
   }) {
     const where: Prisma.KYCDocumentWhereInput = {};
-    if (params.status) where.status = params.status as Prisma.EnumKYCStatusFilter['equals'];
+    if (params.status) where.status = params.status as any;
     if (params.userId) where.userId = params.userId;
-    if (params.type) where.type = params.type as Prisma.EnumKYCDocumentTypeFilter['equals'];
+    if (params.type) where.type = params.type as any;
 
     const [documents, total] = await Promise.all([
       db.kYCDocument.findMany({

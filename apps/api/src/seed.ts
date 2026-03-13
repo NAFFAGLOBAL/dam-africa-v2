@@ -235,7 +235,7 @@ async function main() {
     },
   });
 
-  const vehicle3 = await prisma.vehicle.create({
+  await prisma.vehicle.create({
     data: {
       registrationNo: 'BKE-0001-CI',
       make: 'Kia',
@@ -524,7 +524,7 @@ async function main() {
   });
 
   // Badge definitions
-  const badges = await prisma.badgeDefinition.createMany({
+  await prisma.badgeDefinition.createMany({
     data: [
       { code: 'FIRST_TRIP', name: 'Premier Trajet', description: 'A effectué son premier trajet', category: 'milestone', criteria: { trips: 1 } },
       { code: 'HUNDRED_TRIPS', name: 'Centurion', description: 'A effectué 100 trajets', category: 'milestone', criteria: { trips: 100 } },

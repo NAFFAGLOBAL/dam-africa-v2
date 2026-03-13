@@ -10,7 +10,7 @@ export class IncomeController {
   });
 
   getIncomeHistory = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, source, startDate, endDate, userId, isVerified } = req.query as {
+    const { page, limit, source, startDate, endDate, userId, isVerified } = req.query as unknown as {
       page: number; limit: number; source?: string; startDate?: string; endDate?: string; userId?: string; isVerified?: boolean;
     };
     const targetUserId = userId || req.user!.id;

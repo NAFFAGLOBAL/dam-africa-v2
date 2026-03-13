@@ -5,7 +5,7 @@ import { notificationsService } from './notifications.service';
 
 export class NotificationsController {
   getNotifications = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, isRead, type } = req.query as {
+    const { page, limit, isRead, type } = req.query as unknown as {
       page: number; limit: number; isRead?: boolean; type?: string;
     };
     const { notifications, total } = await notificationsService.getNotifications(req.user!.id, { page, limit, isRead, type });

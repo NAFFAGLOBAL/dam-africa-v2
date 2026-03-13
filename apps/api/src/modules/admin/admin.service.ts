@@ -107,7 +107,7 @@ export class AdminService {
         passwordHash,
         firstName: data.firstName,
         lastName: data.lastName,
-        role: data.role as Prisma.EnumAdminRoleFilter['equals'],
+        role: data.role as any,
         phone: data.phone,
         customerId: data.customerId,
       },
@@ -130,7 +130,7 @@ export class AdminService {
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
-        role: data.role as Prisma.EnumAdminRoleFilter['equals'],
+        role: data.role as any,
         phone: data.phone,
         isActive: data.isActive,
       },

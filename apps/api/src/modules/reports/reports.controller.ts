@@ -5,7 +5,7 @@ import { reportsService } from './reports.service';
 
 export class ReportsController {
   getRevenueReport = asyncHandler(async (req: Request, res: Response) => {
-    const { startDate, endDate, customerId } = req.query as {
+    const { startDate, endDate, customerId } = req.query as unknown as {
       startDate?: string; endDate?: string; customerId?: string;
     };
     const report = await reportsService.getRevenueReport({ startDate, endDate, customerId });
@@ -13,13 +13,13 @@ export class ReportsController {
   });
 
   getPaymentReport = asyncHandler(async (req: Request, res: Response) => {
-    const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+    const { startDate, endDate } = req.query as unknown as { startDate?: string; endDate?: string };
     const report = await reportsService.getPaymentReport({ startDate, endDate });
     sendSuccess(res, report);
   });
 
   getDriverReport = asyncHandler(async (req: Request, res: Response) => {
-    const { startDate, endDate, customerId } = req.query as {
+    const { startDate, endDate, customerId } = req.query as unknown as {
       startDate?: string; endDate?: string; customerId?: string;
     };
     const report = await reportsService.getDriverReport({ startDate, endDate, customerId });
@@ -27,19 +27,19 @@ export class ReportsController {
   });
 
   getFleetReport = asyncHandler(async (req: Request, res: Response) => {
-    const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+    const { startDate, endDate } = req.query as unknown as { startDate?: string; endDate?: string };
     const report = await reportsService.getFleetReport({ startDate, endDate });
     sendSuccess(res, report);
   });
 
   getLoanReport = asyncHandler(async (req: Request, res: Response) => {
-    const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+    const { startDate, endDate } = req.query as unknown as { startDate?: string; endDate?: string };
     const report = await reportsService.getLoanReport({ startDate, endDate });
     sendSuccess(res, report);
   });
 
   exportReport = asyncHandler(async (req: Request, res: Response) => {
-    const { type, startDate, endDate, format } = req.query as {
+    const { type, startDate, endDate, format } = req.query as unknown as {
       type: string; startDate?: string; endDate?: string; format?: string;
     };
     const report = await reportsService.exportReport(type, { startDate, endDate });

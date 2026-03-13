@@ -15,7 +15,7 @@ export class PaymentsController {
   });
 
   listPayments = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, status, userId, loanId, method, startDate, endDate } = req.query as {
+    const { page, limit, status, userId, loanId, method, startDate, endDate } = req.query as unknown as {
       page: number; limit: number; status?: string; userId?: string; loanId?: string; method?: string; startDate?: string; endDate?: string;
     };
     const { payments, total } = await paymentsService.listPayments({ page, limit, status, userId, loanId, method, startDate, endDate });

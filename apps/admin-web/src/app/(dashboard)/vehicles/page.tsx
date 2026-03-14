@@ -32,9 +32,9 @@ interface Vehicle {
 }
 
 const mockVehicles: Vehicle[] = [
-  { id: '1', make: 'Toyota', model: 'Hilux', year: 2023, plate: 'AB-1234-CD', status: 'RENTED', fuelType: 'Diesel', dailyRate: 35000, mileage: 12500, driverName: 'Kouam\u00e9 Jean', gpsActive: true },
+  { id: '1', make: 'Toyota', model: 'Hilux', year: 2023, plate: 'AB-1234-CD', status: 'RENTED', fuelType: 'Diesel', dailyRate: 35000, mileage: 12500, driverName: 'Kouamé Jean', gpsActive: true },
   { id: '2', make: 'Toyota', model: 'Corolla', year: 2022, plate: 'EF-5678-GH', status: 'AVAILABLE', fuelType: 'Essence', dailyRate: 25000, mileage: 28000, gpsActive: true },
-  { id: '3', make: 'Hyundai', model: 'Tucson', year: 2023, plate: 'IJ-9012-KL', status: 'RENTED', fuelType: 'Essence', dailyRate: 30000, mileage: 8700, driverName: 'Traor\u00e9 Fatou', gpsActive: true },
+  { id: '3', make: 'Hyundai', model: 'Tucson', year: 2023, plate: 'IJ-9012-KL', status: 'RENTED', fuelType: 'Essence', dailyRate: 30000, mileage: 8700, driverName: 'Traoré Fatou', gpsActive: true },
   { id: '4', make: 'Suzuki', model: 'Swift', year: 2021, plate: 'MN-3456-OP', status: 'MAINTENANCE', fuelType: 'Essence', dailyRate: 20000, mileage: 45000, gpsActive: false },
   { id: '5', make: 'Toyota', model: 'RAV4', year: 2024, plate: 'QR-7890-ST', status: 'AVAILABLE', fuelType: 'Hybride', dailyRate: 40000, mileage: 3200, gpsActive: true },
   { id: '6', make: 'Nissan', model: 'Patrol', year: 2023, plate: 'UV-1234-WX', status: 'RENTED', fuelType: 'Diesel', dailyRate: 50000, mileage: 15800, driverName: 'Yao Koffi', gpsActive: true },
@@ -59,8 +59,8 @@ export default function VehiclesPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="V\u00e9hicules"
-        description="G\u00e9rer votre flotte de v\u00e9hicules"
+        title="Véhicules"
+        description="Gérer votre flotte de véhicules"
         actions={
           <Button>
             <Plus className="mr-2 h-4 w-4" />
@@ -74,7 +74,7 @@ export default function VehiclesPage() {
         <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher un v\u00e9hicule..."
+            placeholder="Rechercher un véhicule..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -87,9 +87,9 @@ export default function VehiclesPage() {
           <SelectContent>
             <SelectItem value="all">Tous</SelectItem>
             <SelectItem value="AVAILABLE">Disponible</SelectItem>
-            <SelectItem value="RENTED">Lou\u00e9</SelectItem>
+            <SelectItem value="RENTED">Loué</SelectItem>
             <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-            <SelectItem value="RETIRED">Retir\u00e9</SelectItem>
+            <SelectItem value="RETIRED">Retiré</SelectItem>
           </SelectContent>
         </Select>
         <div className="flex gap-1 ml-auto">

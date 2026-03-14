@@ -20,12 +20,12 @@ interface ScoringFactor {
 }
 
 const defaultFactors: ScoringFactor[] = [
-  { id: 'payment_history', label: 'Historique de paiement', description: 'Ponctualit\u00e9 et r\u00e9gularit\u00e9 des paiements', weight: 35, enabled: true },
+  { id: 'payment_history', label: 'Historique de paiement', description: 'Ponctualité et régularité des paiements', weight: 35, enabled: true },
   { id: 'driving_behavior', label: 'Comportement de conduite', description: 'Respect du code de la route, vitesse, freinages', weight: 20, enabled: true },
-  { id: 'vehicle_maintenance', label: 'Entretien du v\u00e9hicule', description: '\u00c9tat g\u00e9n\u00e9ral et maintenance pr\u00e9ventive', weight: 15, enabled: true },
-  { id: 'kyc_completeness', label: 'Compl\u00e9tude KYC', description: 'Documents \u00e0 jour et conformit\u00e9', weight: 10, enabled: true },
-  { id: 'revenue_generation', label: 'G\u00e9n\u00e9ration de revenus', description: 'Revenus mensuels g\u00e9n\u00e9r\u00e9s', weight: 10, enabled: true },
-  { id: 'incident_history', label: 'Historique d\'incidents', description: 'Nombre et gravit\u00e9 des incidents', weight: 10, enabled: true },
+  { id: 'vehicle_maintenance', label: 'Entretien du véhicule', description: 'État général et maintenance préventive', weight: 15, enabled: true },
+  { id: 'kyc_completeness', label: 'Complétude KYC', description: 'Documents à jour et conformité', weight: 10, enabled: true },
+  { id: 'revenue_generation', label: 'Génération de revenus', description: 'Revenus mensuels générés', weight: 10, enabled: true },
+  { id: 'incident_history', label: 'Historique d\'incidents', description: 'Nombre et gravité des incidents', weight: 10, enabled: true },
 ];
 
 const scoreThresholds = [
@@ -33,7 +33,7 @@ const scoreThresholds = [
   { grade: 'B', min: 650, max: 799, color: 'bg-blue-500', label: 'Bon' },
   { grade: 'C', min: 500, max: 649, color: 'bg-yellow-500', label: 'Moyen' },
   { grade: 'D', min: 350, max: 499, color: 'bg-orange-500', label: 'Faible' },
-  { grade: 'E', min: 0, max: 349, color: 'bg-red-500', label: 'Tr\u00e8s faible' },
+  { grade: 'E', min: 0, max: 349, color: 'bg-red-500', label: 'Très faible' },
 ];
 
 export default function ScoringPage() {
@@ -62,7 +62,7 @@ export default function ScoringPage() {
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => setFactors(defaultFactors)}>
               <RotateCcw className="mr-2 h-4 w-4" />
-              R\u00e9initialiser
+              Réinitialiser
             </Button>
             <Button size="sm">
               <Save className="mr-2 h-4 w-4" />
@@ -79,7 +79,7 @@ export default function ScoringPage() {
             <CardHeader>
               <CardTitle className="text-base">Facteurs de scoring</CardTitle>
               <CardDescription>
-                Ajustez le poids de chaque facteur. Le total doit \u00eatre de 100%.
+                Ajustez le poids de chaque facteur. Le total doit être de 100%.
                 Actuellement: <span className={totalWeight === 100 ? 'text-emerald-500 font-semibold' : 'text-destructive font-semibold'}>{totalWeight}%</span>
               </CardDescription>
             </CardHeader>
@@ -131,7 +131,7 @@ export default function ScoringPage() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Aper\u00e7u du score</CardTitle>
+              <CardTitle className="text-base">Aperçu du score</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center">
               <ScoreGauge score={750} size={180} strokeWidth={14} />

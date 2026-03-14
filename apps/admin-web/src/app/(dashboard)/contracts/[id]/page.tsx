@@ -12,7 +12,7 @@ import { getInitials, formatCurrency, formatDate } from '@/lib/utils';
 
 const mockContract = {
   id: 'C1',
-  driverName: 'Kouam\u00e9 Jean',
+  driverName: 'Kouamé Jean',
   driverEmail: 'kouame@email.com',
   vehicleName: 'Toyota Hilux 2023',
   plate: 'AB-1234-CD',
@@ -26,7 +26,7 @@ const mockContract = {
   startDate: '2024-01-15',
   endDate: '2027-01-15',
   payments: [
-    { month: 'Ao\u00fbt 2024', amount: 520000, status: 'PENDING', date: '2024-08-15' },
+    { month: 'Août 2024', amount: 520000, status: 'PENDING', date: '2024-08-15' },
     { month: 'Juillet 2024', amount: 520000, status: 'COMPLETED', date: '2024-07-15' },
     { month: 'Juin 2024', amount: 520000, status: 'COMPLETED', date: '2024-06-15' },
     { month: 'Mai 2024', amount: 520000, status: 'COMPLETED', date: '2024-05-15' },
@@ -51,7 +51,7 @@ export default function ContractDetailPage() {
         actions={
           <Button variant="outline" size="sm">
             <FileText className="mr-2 h-4 w-4" />
-            T\u00e9l\u00e9charger le contrat
+            Télécharger le contrat
           </Button>
         }
       />
@@ -60,7 +60,7 @@ export default function ContractDetailPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">D\u00e9tails du contrat</CardTitle>
+              <CardTitle className="text-base">Détails du contrat</CardTitle>
               <StatusBadge status={contract.status} />
             </div>
           </CardHeader>
@@ -99,7 +99,7 @@ export default function ContractDetailPage() {
               </div>
               <Progress value={progressPct} className="h-3" />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Pay\u00e9: {formatCurrency(contract.totalPaid)}</span>
+                <span>Payé: {formatCurrency(contract.totalPaid)}</span>
                 <span>Restant: {formatCurrency(contract.totalValue - contract.totalPaid)}</span>
               </div>
             </div>
@@ -107,9 +107,9 @@ export default function ContractDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               {[
                 { label: 'Apport initial', value: formatCurrency(contract.downPayment), icon: Wallet },
-                { label: 'Mensualit\u00e9', value: formatCurrency(contract.monthlyPayment), icon: Calendar },
-                { label: 'D\u00e9but', value: formatDate(contract.startDate), icon: Calendar },
-                { label: 'Fin pr\u00e9vue', value: formatDate(contract.endDate), icon: Calendar },
+                { label: 'Mensualité', value: formatCurrency(contract.monthlyPayment), icon: Calendar },
+                { label: 'Début', value: formatDate(contract.startDate), icon: Calendar },
+                { label: 'Fin prévue', value: formatDate(contract.endDate), icon: Calendar },
               ].map((item) => (
                 <div key={item.label} className="p-3 rounded-lg border space-y-1">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

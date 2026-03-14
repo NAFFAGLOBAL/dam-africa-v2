@@ -55,7 +55,7 @@ const navSections: NavSection[] = [
     title: 'Gestion',
     items: [
       { label: 'Conducteurs', icon: Users, href: '/drivers' },
-      { label: 'V\u00e9hicules', icon: Car, href: '/vehicles' },
+      { label: 'Véhicules', icon: Car, href: '/vehicles' },
       { label: 'Locations', icon: Key, href: '/rentals' },
       { label: 'Contrats', icon: FileText, href: '/contracts' },
     ],
@@ -63,12 +63,12 @@ const navSections: NavSection[] = [
   {
     title: 'Finance',
     items: [
-      { label: 'Pr\u00eats', icon: CreditCard, href: '/loans' },
+      { label: 'Prêts', icon: CreditCard, href: '/loans' },
       { label: 'Paiements', icon: Wallet, href: '/payments' },
     ],
   },
   {
-    title: 'Op\u00e9rations',
+    title: 'Opérations',
     items: [
       { label: 'Suivi GPS', icon: MapPin, href: '/tracking' },
       { label: 'Incidents', icon: AlertTriangle, href: '/incidents' },
@@ -81,7 +81,7 @@ const navSections: NavSection[] = [
       { label: 'KYC', icon: Gauge, href: '/kyc' },
       { label: 'Scoring', icon: Gauge, href: '/scoring' },
       { label: 'Utilisateurs', icon: UserCog, href: '/users' },
-      { label: 'Param\u00e8tres', icon: Settings, href: '/settings' },
+      { label: 'Paramètres', icon: Settings, href: '/settings' },
     ],
   },
   {
@@ -206,7 +206,7 @@ export function Sidebar() {
                   <LogOut className="h-4 w-4" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="right">D\u00e9connexion</TooltipContent>
+              <TooltipContent side="right">Déconnexion</TooltipContent>
             </Tooltip>
           )}
         </div>

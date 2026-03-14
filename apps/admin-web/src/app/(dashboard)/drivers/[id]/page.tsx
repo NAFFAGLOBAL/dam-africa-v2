@@ -27,7 +27,7 @@ import { getInitials, formatCurrency, formatDate, formatPhone } from '@/lib/util
 // Mock driver detail
 const mockDriver = {
   id: '1',
-  firstName: 'Kouam\u00e9',
+  firstName: 'Kouamé',
   lastName: 'Jean',
   phone: '+2250102030405',
   email: 'kouame.jean@email.com',
@@ -51,9 +51,9 @@ const mockDriver = {
     { id: 'V1', make: 'Toyota', model: 'Hilux', plate: 'AB-1234-CD', status: 'RENTED' },
   ],
   activity: [
-    { id: 'A1', action: 'Paiement effectu\u00e9 - 250 000 FCFA via Wave', date: '2024-07-15' },
-    { id: 'A2', action: 'Document KYC approuv\u00e9', date: '2024-06-20' },
-    { id: 'A3', action: 'Pr\u00eat d\u00e9caiss\u00e9 - 2 500 000 FCFA', date: '2024-06-01' },
+    { id: 'A1', action: 'Paiement effectué - 250 000 FCFA via Wave', date: '2024-07-15' },
+    { id: 'A2', action: 'Document KYC approuvé', date: '2024-06-20' },
+    { id: 'A3', action: 'Prêt décaissé - 2 500 000 FCFA', date: '2024-06-01' },
     { id: 'A4', action: 'Inscription sur la plateforme', date: '2024-01-15' },
   ],
 };
@@ -137,10 +137,10 @@ export default function DriverDetailPage() {
       <Tabs defaultValue="info" className="space-y-4">
         <TabsList>
           <TabsTrigger value="info">Informations</TabsTrigger>
-          <TabsTrigger value="loans">Pr\u00eats</TabsTrigger>
+          <TabsTrigger value="loans">Prêts</TabsTrigger>
           <TabsTrigger value="payments">Paiements</TabsTrigger>
-          <TabsTrigger value="vehicles">V\u00e9hicules</TabsTrigger>
-          <TabsTrigger value="activity">Activit\u00e9</TabsTrigger>
+          <TabsTrigger value="vehicles">Véhicules</TabsTrigger>
+          <TabsTrigger value="activity">Activité</TabsTrigger>
         </TabsList>
 
         <TabsContent value="info">
@@ -153,10 +153,10 @@ export default function DriverDetailPage() {
                 {[
                   { label: 'Nom complet', value: `${driver.firstName} ${driver.lastName}` },
                   { label: 'Date de naissance', value: formatDate(driver.dateOfBirth) },
-                  { label: 'T\u00e9l\u00e9phone', value: formatPhone(driver.phone) },
+                  { label: 'Téléphone', value: formatPhone(driver.phone) },
                   { label: 'Email', value: driver.email },
                   { label: 'Adresse', value: driver.address },
-                  { label: 'N\u00b0 Permis', value: driver.licenseNumber },
+                  { label: 'N° Permis', value: driver.licenseNumber },
                 ].map((item) => (
                   <div key={item.label} className="flex justify-between">
                     <span className="text-sm text-muted-foreground">{item.label}</span>
@@ -168,14 +168,14 @@ export default function DriverDetailPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">R\u00e9sum\u00e9 financier</CardTitle>
+                <CardTitle className="text-base">Résumé financier</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  { label: 'Pr\u00eats actifs', value: '1', icon: CreditCard },
-                  { label: 'Montant total emprunt\u00e9', value: formatCurrency(4000000), icon: Wallet },
-                  { label: 'Restant d\u00fb', value: formatCurrency(1800000), icon: Wallet },
-                  { label: 'Paiements effectu\u00e9s', value: '8', icon: CheckCircle2 },
+                  { label: 'Prêts actifs', value: '1', icon: CreditCard },
+                  { label: 'Montant total emprunté', value: formatCurrency(4000000), icon: Wallet },
+                  { label: 'Restant dû', value: formatCurrency(1800000), icon: Wallet },
+                  { label: 'Paiements effectués', value: '8', icon: CheckCircle2 },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

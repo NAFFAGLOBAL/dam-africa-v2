@@ -34,7 +34,7 @@ export default function LoginPage() {
     } catch (err: any) {
       setError(
         err?.response?.data?.message ||
-          'Identifiants invalides. Veuillez r\u00e9essayer.'
+          'Identifiants invalides. Veuillez réessayer.'
       );
     } finally {
       setLoading(false);
@@ -65,7 +65,7 @@ export default function LoginPage() {
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl text-center">Connexion</CardTitle>
             <CardDescription className="text-center">
-              Connectez-vous \u00e0 votre compte administrateur
+              Connectez-vous à votre compte administrateur
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -81,7 +81,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@damflotte.com"
+                  placeholder="admin@damflotte.ci"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
@@ -96,7 +96,7 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="current-password"
@@ -129,15 +129,15 @@ export default function LoginPage() {
 
               <div className="rounded-lg bg-muted/50 px-4 py-3 text-xs text-muted-foreground space-y-1">
                 <p className="font-medium">Identifiants de test :</p>
-                <p>Email : admin@damflotte.com</p>
-                <p>Mot de passe : Admin@123</p>
+                <p>Email : admin@damflotte.ci</p>
+                <p>Mot de passe : Admin@2024</p>
               </div>
             </form>
           </CardContent>
         </Card>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          &copy; {new Date().getFullYear()} DAMFlotte CLD. Tous droits r\u00e9serv\u00e9s.
+          &copy; {new Date().getFullYear()} DAMFlotte CLD. Tous droits réservés.
         </p>
       </div>
     </div>

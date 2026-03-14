@@ -29,21 +29,21 @@ interface Payment {
 }
 
 const mockPayments: Payment[] = [
-  { id: 'P1', driverName: 'Kouam\u00e9 Jean', amount: 225000, method: 'Wave', loanId: 'L1', status: 'COMPLETED', date: '2024-08-01', reference: 'WAV-78542' },
+  { id: 'P1', driverName: 'Kouamé Jean', amount: 225000, method: 'Wave', loanId: 'L1', status: 'COMPLETED', date: '2024-08-01', reference: 'WAV-78542' },
   { id: 'P2', driverName: 'Yao Koffi', amount: 280000, method: 'Orange Money', loanId: 'L5', status: 'COMPLETED', date: '2024-08-01', reference: 'OMO-45612' },
   { id: 'P3', driverName: 'Coulibaly Awa', amount: 175000, method: 'MTN MoMo', loanId: 'L7', status: 'PENDING', date: '2024-08-02', reference: 'MTN-12345' },
-  { id: 'P4', driverName: 'Traor\u00e9 Fatou', amount: 250000, method: 'Wave', loanId: 'L2', status: 'COMPLETED', date: '2024-07-30', reference: 'WAV-98765' },
-  { id: 'P5', driverName: 'Tour\u00e9 Abdoulaye', amount: 300000, method: 'Esp\u00e8ces', loanId: 'L8', status: 'FAILED', date: '2024-07-28', reference: 'CSH-00123' },
-  { id: 'P6', driverName: 'Ciss\u00e9 Mariam', amount: 200000, method: 'Wave', loanId: 'L3', status: 'COMPLETED', date: '2024-07-25', reference: 'WAV-33456' },
+  { id: 'P4', driverName: 'Traoré Fatou', amount: 250000, method: 'Wave', loanId: 'L2', status: 'COMPLETED', date: '2024-07-30', reference: 'WAV-98765' },
+  { id: 'P5', driverName: 'Touré Abdoulaye', amount: 300000, method: 'Espèces', loanId: 'L8', status: 'FAILED', date: '2024-07-28', reference: 'CSH-00123' },
+  { id: 'P6', driverName: 'Cissé Mariam', amount: 200000, method: 'Wave', loanId: 'L3', status: 'COMPLETED', date: '2024-07-25', reference: 'WAV-33456' },
   { id: 'P7', driverName: 'Diallo Moussa', amount: 150000, method: 'Orange Money', loanId: 'L4', status: 'COMPLETED', date: '2024-07-20', reference: 'OMO-78901' },
-  { id: 'P8', driverName: 'Kouam\u00e9 Jean', amount: 225000, method: 'Wave', loanId: 'L1', status: 'REFUNDED', date: '2024-07-15', reference: 'WAV-55678' },
+  { id: 'P8', driverName: 'Kouamé Jean', amount: 225000, method: 'Wave', loanId: 'L1', status: 'REFUNDED', date: '2024-07-15', reference: 'WAV-55678' },
 ];
 
 const summaryCards = [
-  { label: 'Total re\u00e7u ce mois', value: 12_750_000, change: 18.5, icon: Wallet, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
-  { label: 'Transactions r\u00e9ussies', value: 156, icon: TrendingUp, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/30' },
+  { label: 'Total reçu ce mois', value: 12_750_000, change: 18.5, icon: Wallet, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
+  { label: 'Transactions réussies', value: 156, icon: TrendingUp, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/30' },
   { label: 'En attente', value: 8, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/30' },
-  { label: '\u00c9chou\u00e9es', value: 3, icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-950/30' },
+  { label: 'Échouées', value: 3, icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-950/30' },
 ];
 
 const columns: ColumnDef<Payment>[] = [
@@ -72,14 +72,14 @@ const columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: 'method',
-    header: 'M\u00e9thode',
+    header: 'Méthode',
     cell: ({ row }) => (
       <span className="text-sm">{row.original.method}</span>
     ),
   },
   {
     accessorKey: 'reference',
-    header: 'R\u00e9f\u00e9rence',
+    header: 'Référence',
     cell: ({ row }) => (
       <span className="font-mono text-xs text-muted-foreground">
         {row.original.reference}
@@ -147,14 +147,14 @@ export default function PaymentsPage() {
           <div className="flex gap-2">
             <Select value={methodFilter} onValueChange={setMethodFilter}>
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="M\u00e9thode" />
+                <SelectValue placeholder="Méthode" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes</SelectItem>
                 <SelectItem value="Wave">Wave</SelectItem>
                 <SelectItem value="Orange Money">Orange Money</SelectItem>
                 <SelectItem value="MTN MoMo">MTN MoMo</SelectItem>
-                <SelectItem value="Esp\u00e8ces">Esp\u00e8ces</SelectItem>
+                <SelectItem value="Espèces">Espèces</SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -163,10 +163,10 @@ export default function PaymentsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous</SelectItem>
-                <SelectItem value="COMPLETED">Effectu\u00e9</SelectItem>
+                <SelectItem value="COMPLETED">Effectué</SelectItem>
                 <SelectItem value="PENDING">En attente</SelectItem>
-                <SelectItem value="FAILED">\u00c9chou\u00e9</SelectItem>
-                <SelectItem value="REFUNDED">Rembours\u00e9</SelectItem>
+                <SelectItem value="FAILED">Échoué</SelectItem>
+                <SelectItem value="REFUNDED">Remboursé</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -12,7 +12,7 @@ import { getInitials, formatCurrency, formatDate } from '@/lib/utils';
 
 const mockLoan = {
   id: 'L1',
-  driverName: 'Kouam\u00e9 Jean',
+  driverName: 'Kouamé Jean',
   driverEmail: 'kouame@email.com',
   amount: 2500000,
   disbursedAmount: 2500000,
@@ -26,7 +26,7 @@ const mockLoan = {
   approvedAt: '2024-05-25',
   disbursedAt: '2024-06-01',
   nextPaymentDate: '2024-09-01',
-  purpose: 'Acquisition v\u00e9hicule',
+  purpose: 'Acquisition véhicule',
   payments: [
     { id: 'P1', amount: 225000, date: '2024-08-01', status: 'COMPLETED', method: 'Wave' },
     { id: 'P2', amount: 225000, date: '2024-07-01', status: 'COMPLETED', method: 'Orange Money' },
@@ -42,9 +42,9 @@ export default function LoanDetailPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Pr\u00eat ${loan.id}`}
+        title={`Prêt ${loan.id}`}
         breadcrumbs={[
-          { label: 'Pr\u00eats', href: '/loans' },
+          { label: 'Prêts', href: '/loans' },
           { label: loan.id },
         ]}
         actions={
@@ -68,7 +68,7 @@ export default function LoanDetailPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">D\u00e9tails du pr\u00eat</CardTitle>
+              <CardTitle className="text-base">Détails du prêt</CardTitle>
               <StatusBadge status={loan.status} />
             </div>
           </CardHeader>
@@ -88,7 +88,7 @@ export default function LoanDetailPage() {
 
             {/* Amount display */}
             <div className="text-center py-4">
-              <p className="text-sm text-muted-foreground mb-1">Montant du pr\u00eat</p>
+              <p className="text-sm text-muted-foreground mb-1">Montant du prêt</p>
               <p className="text-stat-lg">{formatCurrency(loan.amount)}</p>
             </div>
 
@@ -100,7 +100,7 @@ export default function LoanDetailPage() {
               </div>
               <Progress value={progressPercent} className="h-3" />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Pay\u00e9: {formatCurrency(loan.amount - loan.remainingBalance)}</span>
+                <span>Payé: {formatCurrency(loan.amount - loan.remainingBalance)}</span>
                 <span>Restant: {formatCurrency(loan.remainingBalance)}</span>
               </div>
             </div>
@@ -108,10 +108,10 @@ export default function LoanDetailPage() {
             {/* Details grid */}
             <div className="grid grid-cols-2 gap-4">
               {[
-                { label: 'Mensualit\u00e9', value: formatCurrency(loan.monthlyPayment), icon: Wallet },
-                { label: 'Taux d\'int\u00e9r\u00eat', value: `${loan.interestRate}%`, icon: Percent },
-                { label: 'Dur\u00e9e', value: `${loan.term} mois`, icon: Clock },
-                { label: 'Versements effectu\u00e9s', value: `${loan.paidInstallments}/${loan.term}`, icon: Calendar },
+                { label: 'Mensualité', value: formatCurrency(loan.monthlyPayment), icon: Wallet },
+                { label: 'Taux d\'intérêt', value: `${loan.interestRate}%`, icon: Percent },
+                { label: 'Durée', value: `${loan.term} mois`, icon: Clock },
+                { label: 'Versements effectués', value: `${loan.paidInstallments}/${loan.term}`, icon: Calendar },
               ].map((item) => (
                 <div key={item.label} className="p-3 rounded-lg border space-y-1">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -134,9 +134,9 @@ export default function LoanDetailPage() {
             <div className="space-y-4">
               {[
                 { label: 'Prochain paiement', value: formatDate(loan.nextPaymentDate), color: 'bg-amber-500' },
-                { label: 'D\u00e9caiss\u00e9 le', value: formatDate(loan.disbursedAt || ''), color: 'bg-emerald-500' },
-                { label: 'Approuv\u00e9 le', value: formatDate(loan.approvedAt), color: 'bg-blue-500' },
-                { label: 'Demand\u00e9 le', value: formatDate(loan.appliedAt), color: 'bg-gray-400' },
+                { label: 'Décaissé le', value: formatDate(loan.disbursedAt || ''), color: 'bg-emerald-500' },
+                { label: 'Approuvé le', value: formatDate(loan.approvedAt), color: 'bg-blue-500' },
+                { label: 'Demandé le', value: formatDate(loan.appliedAt), color: 'bg-gray-400' },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className={`h-2.5 w-2.5 rounded-full ${item.color} mt-1.5 shrink-0`} />

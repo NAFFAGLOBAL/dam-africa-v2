@@ -27,11 +27,11 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { label: 'Tableau de bord', icon: LayoutDashboard, href: '/dashboard' },
   { label: 'Conducteurs', icon: Users, href: '/drivers' },
-  { label: 'V\u00e9hicules', icon: Car, href: '/vehicles' },
+  { label: 'Véhicules', icon: Car, href: '/vehicles' },
   { label: 'Locations', icon: Key, href: '/rentals' },
   { label: 'Contrats', icon: FileText, href: '/contracts' },
   { label: 'KYC', icon: Gauge, href: '/kyc' },
-  { label: 'Pr\u00eats', icon: CreditCard, href: '/loans' },
+  { label: 'Prêts', icon: CreditCard, href: '/loans' },
   { label: 'Paiements', icon: Wallet, href: '/payments' },
   { label: 'Suivi GPS', icon: MapPin, href: '/tracking' },
   { label: 'Incidents', icon: AlertTriangle, href: '/incidents' },
@@ -39,7 +39,7 @@ const navItems = [
   { label: 'Rapports', icon: BarChart3, href: '/analytics' },
   { label: 'Scoring', icon: Gauge, href: '/scoring' },
   { label: 'Utilisateurs', icon: UserCog, href: '/users' },
-  { label: 'Param\u00e8tres', icon: Settings, href: '/settings' },
+  { label: 'Paramètres', icon: Settings, href: '/settings' },
 ];
 
 export function MobileNav() {

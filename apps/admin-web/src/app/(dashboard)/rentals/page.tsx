@@ -28,8 +28,8 @@ interface Rental {
 }
 
 const mockRentals: Rental[] = [
-  { id: 'R1', driverName: 'Kouam\u00e9 Jean', vehicleName: 'Toyota Hilux', plate: 'AB-1234-CD', dailyRate: 35000, startDate: '2024-06-01', status: 'ACTIVE', totalPaid: 2100000 },
-  { id: 'R2', driverName: 'Traor\u00e9 Fatou', vehicleName: 'Hyundai Tucson', plate: 'IJ-9012-KL', dailyRate: 30000, startDate: '2024-05-15', status: 'ACTIVE', totalPaid: 2400000 },
+  { id: 'R1', driverName: 'Kouamé Jean', vehicleName: 'Toyota Hilux', plate: 'AB-1234-CD', dailyRate: 35000, startDate: '2024-06-01', status: 'ACTIVE', totalPaid: 2100000 },
+  { id: 'R2', driverName: 'Traoré Fatou', vehicleName: 'Hyundai Tucson', plate: 'IJ-9012-KL', dailyRate: 30000, startDate: '2024-05-15', status: 'ACTIVE', totalPaid: 2400000 },
   { id: 'R3', driverName: 'Yao Koffi', vehicleName: 'Nissan Patrol', plate: 'UV-1234-WX', dailyRate: 50000, startDate: '2024-07-01', status: 'ACTIVE', totalPaid: 1500000 },
   { id: 'R4', driverName: 'Diallo Moussa', vehicleName: 'Toyota Corolla', plate: 'EF-5678-GH', dailyRate: 25000, startDate: '2024-01-10', endDate: '2024-06-10', status: 'COMPLETED', totalPaid: 3750000 },
   { id: 'R5', driverName: 'Kone Aminata', vehicleName: 'Renault Duster', plate: 'CD-9012-EF', dailyRate: 28000, startDate: '2024-07-15', status: 'PENDING', totalPaid: 0 },
@@ -52,7 +52,7 @@ const columns: ColumnDef<Rental>[] = [
   },
   {
     accessorKey: 'vehicleName',
-    header: 'V\u00e9hicule',
+    header: 'Véhicule',
     cell: ({ row }) => (
       <div>
         <p className="text-sm font-medium">{row.original.vehicleName}</p>
@@ -71,14 +71,14 @@ const columns: ColumnDef<Rental>[] = [
   },
   {
     accessorKey: 'startDate',
-    header: 'D\u00e9but',
+    header: 'Début',
     cell: ({ row }) => (
       <span className="text-sm">{formatDate(row.original.startDate)}</span>
     ),
   },
   {
     accessorKey: 'totalPaid',
-    header: 'Total pay\u00e9',
+    header: 'Total payé',
     cell: ({ row }) => (
       <span className="text-sm tabular-nums">{formatCurrency(row.original.totalPaid)}</span>
     ),
@@ -100,7 +100,7 @@ export default function RentalsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Locations"
-        description="G\u00e9rer les locations de v\u00e9hicules"
+        description="Gérer les locations de véhicules"
       />
 
       <DataTable
@@ -117,7 +117,7 @@ export default function RentalsPage() {
               <SelectItem value="all">Tous</SelectItem>
               <SelectItem value="ACTIVE">Actif</SelectItem>
               <SelectItem value="PENDING">En attente</SelectItem>
-              <SelectItem value="COMPLETED">Termin\u00e9</SelectItem>
+              <SelectItem value="COMPLETED">Terminé</SelectItem>
             </SelectContent>
           </Select>
         }

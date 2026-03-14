@@ -56,7 +56,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold">Activit\u00e9 r\u00e9cente</CardTitle>
+        <CardTitle className="text-base font-semibold">Activité récente</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

@@ -29,9 +29,9 @@ interface Contract {
 }
 
 const mockContracts: Contract[] = [
-  { id: 'C1', driverName: 'Kouam\u00e9 Jean', vehicleName: 'Toyota Hilux 2023', totalValue: 18500000, monthlyPayment: 520000, remainingMonths: 30, totalMonths: 36, status: 'ACTIVE', startDate: '2024-01-15' },
+  { id: 'C1', driverName: 'Kouamé Jean', vehicleName: 'Toyota Hilux 2023', totalValue: 18500000, monthlyPayment: 520000, remainingMonths: 30, totalMonths: 36, status: 'ACTIVE', startDate: '2024-01-15' },
   { id: 'C2', driverName: 'Yao Koffi', vehicleName: 'Nissan Patrol 2023', totalValue: 25000000, monthlyPayment: 750000, remainingMonths: 44, totalMonths: 48, status: 'ACTIVE', startDate: '2024-03-01' },
-  { id: 'C3', driverName: 'Traor\u00e9 Fatou', vehicleName: 'Hyundai Tucson 2023', totalValue: 15000000, monthlyPayment: 450000, remainingMonths: 0, totalMonths: 36, status: 'COMPLETED', startDate: '2021-06-01' },
+  { id: 'C3', driverName: 'Traoré Fatou', vehicleName: 'Hyundai Tucson 2023', totalValue: 15000000, monthlyPayment: 450000, remainingMonths: 0, totalMonths: 36, status: 'COMPLETED', startDate: '2021-06-01' },
   { id: 'C4', driverName: 'Diallo Moussa', vehicleName: 'Toyota Corolla 2022', totalValue: 12000000, monthlyPayment: 380000, remainingMonths: 24, totalMonths: 36, status: 'TERMINATED', startDate: '2023-08-01' },
   { id: 'C5', driverName: 'Kone Aminata', vehicleName: 'Toyota RAV4 2024', totalValue: 22000000, monthlyPayment: 650000, remainingMonths: 36, totalMonths: 36, status: 'PENDING', startDate: '2024-08-01' },
 ];
@@ -53,7 +53,7 @@ const columns: ColumnDef<Contract>[] = [
   },
   {
     accessorKey: 'vehicleName',
-    header: 'V\u00e9hicule',
+    header: 'Véhicule',
   },
   {
     accessorKey: 'totalValue',
@@ -66,7 +66,7 @@ const columns: ColumnDef<Contract>[] = [
   },
   {
     accessorKey: 'monthlyPayment',
-    header: 'Mensualit\u00e9',
+    header: 'Mensualité',
     cell: ({ row }) => (
       <span className="text-sm tabular-nums">{formatCurrency(row.original.monthlyPayment)}</span>
     ),
@@ -108,7 +108,7 @@ export default function ContractsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Contrats Location-Vente"
-        description="G\u00e9rer les contrats de location avec option d'achat"
+        description="Gérer les contrats de location avec option d'achat"
       />
 
       <DataTable
@@ -126,8 +126,8 @@ export default function ContractsPage() {
               <SelectItem value="all">Tous</SelectItem>
               <SelectItem value="ACTIVE">Actif</SelectItem>
               <SelectItem value="PENDING">En attente</SelectItem>
-              <SelectItem value="COMPLETED">Termin\u00e9</SelectItem>
-              <SelectItem value="TERMINATED">R\u00e9sili\u00e9</SelectItem>
+              <SelectItem value="COMPLETED">Terminé</SelectItem>
+              <SelectItem value="TERMINATED">Résilié</SelectItem>
             </SelectContent>
           </Select>
         }

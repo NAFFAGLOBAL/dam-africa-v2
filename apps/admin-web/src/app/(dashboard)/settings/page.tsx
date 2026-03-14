@@ -42,16 +42,16 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Param\u00e8tres"
+        title="Paramètres"
         description="Configuration de la plateforme"
       />
 
       <Tabs defaultValue="general" className="space-y-6">
         <TabsList>
-          <TabsTrigger value="general">G\u00e9n\u00e9ral</TabsTrigger>
+          <TabsTrigger value="general">Général</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="features">Fonctionnalit\u00e9s</TabsTrigger>
-          <TabsTrigger value="security">S\u00e9curit\u00e9</TabsTrigger>
+          <TabsTrigger value="features">Fonctionnalités</TabsTrigger>
+          <TabsTrigger value="security">Sécurité</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -60,7 +60,7 @@ export default function SettingsPage() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Globe className="h-5 w-5 text-muted-foreground" />
-                  <CardTitle className="text-base">Informations g\u00e9n\u00e9rales</CardTitle>
+                  <CardTitle className="text-base">Informations générales</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -73,12 +73,12 @@ export default function SettingsPage() {
                   <Input type="email" defaultValue="contact@damflotte.com" />
                 </div>
                 <div className="space-y-2">
-                  <Label>T\u00e9l\u00e9phone</Label>
+                  <Label>Téléphone</Label>
                   <Input defaultValue="+225 01 02 03 04 05" />
                 </div>
                 <div className="space-y-2">
                   <Label>Adresse</Label>
-                  <Input defaultValue="Cocody, Abidjan, C\u00f4te d'Ivoire" />
+                  <Input defaultValue="Cocody, Abidjan, Côte d'Ivoire" />
                 </div>
                 <div className="space-y-2">
                   <Label>Devise</Label>
@@ -109,7 +109,7 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Th\u00e8me</Label>
+                  <Label>Thème</Label>
                   <Select defaultValue="light">
                     <SelectTrigger>
                       <SelectValue />
@@ -117,7 +117,7 @@ export default function SettingsPage() {
                     <SelectContent>
                       <SelectItem value="light">Clair</SelectItem>
                       <SelectItem value="dark">Sombre</SelectItem>
-                      <SelectItem value="system">Syst\u00e8me</SelectItem>
+                      <SelectItem value="system">Système</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -128,7 +128,7 @@ export default function SettingsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="fr">Fran\u00e7ais</SelectItem>
+                      <SelectItem value="fr">Français</SelectItem>
                       <SelectItem value="en">English</SelectItem>
                     </SelectContent>
                   </Select>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Bell className="h-5 w-5 text-muted-foreground" />
-                <CardTitle className="text-base">Pr\u00e9f\u00e9rences de notification</CardTitle>
+                <CardTitle className="text-base">Préférences de notification</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -186,7 +186,7 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   {[
                     { key: 'kycAlerts' as const, label: 'Nouvelles soumissions KYC' },
-                    { key: 'paymentAlerts' as const, label: 'Paiements re\u00e7us/\u00e9chou\u00e9s' },
+                    { key: 'paymentAlerts' as const, label: 'Paiements reçus/échoués' },
                     { key: 'incidentAlerts' as const, label: 'Nouveaux incidents' },
                   ].map((item) => (
                     <div key={item.key} className="flex items-center justify-between">
@@ -213,18 +213,18 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Feature flags</CardTitle>
-              <CardDescription>Activer ou d\u00e9sactiver les fonctionnalit\u00e9s de la plateforme</CardDescription>
+              <CardDescription>Activer ou désactiver les fonctionnalités de la plateforme</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {[
-                { key: 'gpsTracking' as const, label: 'Suivi GPS', desc: 'Localisation en temps r\u00e9el des v\u00e9hicules' },
-                { key: 'creditScoring' as const, label: 'Scoring de cr\u00e9dit', desc: 'Calcul automatique du score DAM' },
-                { key: 'autoKycReview' as const, label: 'V\u00e9rification KYC automatique', desc: 'V\u00e9rification automatis\u00e9e des documents via IA' },
+                { key: 'gpsTracking' as const, label: 'Suivi GPS', desc: 'Localisation en temps réel des véhicules' },
+                { key: 'creditScoring' as const, label: 'Scoring de crédit', desc: 'Calcul automatique du score DAM' },
+                { key: 'autoKycReview' as const, label: 'Vérification KYC automatique', desc: 'Vérification automatisée des documents via IA' },
                 { key: 'smsNotifications' as const, label: 'Notifications SMS', desc: 'Envoi de SMS aux conducteurs' },
                 { key: 'mobilePayments' as const, label: 'Paiements mobiles', desc: 'Wave, Orange Money, MTN MoMo' },
                 { key: 'rentToOwn' as const, label: 'Location-vente', desc: 'Contrats de location avec option d\'achat' },
-                { key: 'supportTickets' as const, label: 'Tickets de support', desc: 'Syst\u00e8me de support int\u00e9gr\u00e9' },
-                { key: 'analytics' as const, label: 'Analytique avanc\u00e9e', desc: 'Rapports et tableaux de bord avanc\u00e9s' },
+                { key: 'supportTickets' as const, label: 'Tickets de support', desc: 'Système de support intégré' },
+                { key: 'analytics' as const, label: 'Analytique avancée', desc: 'Rapports et tableaux de bord avancés' },
               ].map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-2">
                   <div>
@@ -254,13 +254,13 @@ export default function SettingsPage() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-muted-foreground" />
-                  <CardTitle className="text-base">S\u00e9curit\u00e9</CardTitle>
+                  <CardTitle className="text-base">Sécurité</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium">Authentification \u00e0 deux facteurs</p>
+                    <p className="text-sm font-medium">Authentification à deux facteurs</p>
                     <p className="text-xs text-muted-foreground">Requis pour tous les admin</p>
                   </div>
                   <Switch defaultChecked />
@@ -269,7 +269,7 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Expiration de session</p>
-                    <p className="text-xs text-muted-foreground">D\u00e9connexion automatique</p>
+                    <p className="text-xs text-muted-foreground">Déconnexion automatique</p>
                   </div>
                   <Select defaultValue="30">
                     <SelectTrigger className="w-32">
@@ -286,7 +286,7 @@ export default function SettingsPage() {
                 <Separator />
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium">Journalisation des activit\u00e9s</p>
+                    <p className="text-sm font-medium">Journalisation des activités</p>
                     <p className="text-xs text-muted-foreground">Enregistrer toutes les actions</p>
                   </div>
                   <Switch defaultChecked />
@@ -301,17 +301,17 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Mot de passe actuel</Label>
-                  <Input type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" />
+                  <Input type="password" placeholder="••••••••" />
                 </div>
                 <div className="space-y-2">
                   <Label>Nouveau mot de passe</Label>
-                  <Input type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" />
+                  <Input type="password" placeholder="••••••••" />
                 </div>
                 <div className="space-y-2">
                   <Label>Confirmer le mot de passe</Label>
-                  <Input type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" />
+                  <Input type="password" placeholder="••••••••" />
                 </div>
-                <Button>Mettre \u00e0 jour</Button>
+                <Button>Mettre à jour</Button>
               </CardContent>
             </Card>
           </div>

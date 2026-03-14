@@ -38,16 +38,16 @@ interface Driver {
 
 // Mock data
 const mockDrivers: Driver[] = [
-  { id: '1', firstName: 'Kouam\u00e9', lastName: 'Jean', phone: '+2250102030405', email: 'kouame@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 780, joinedAt: '2024-01-15' },
-  { id: '2', firstName: 'Traor\u00e9', lastName: 'Fatou', phone: '+2250708091011', email: 'traore@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 650, joinedAt: '2024-02-20' },
+  { id: '1', firstName: 'Kouamé', lastName: 'Jean', phone: '+2250102030405', email: 'kouame@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 780, joinedAt: '2024-01-15' },
+  { id: '2', firstName: 'Traoré', lastName: 'Fatou', phone: '+2250708091011', email: 'traore@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 650, joinedAt: '2024-02-20' },
   { id: '3', firstName: 'Diallo', lastName: 'Moussa', phone: '+2250506070809', email: 'diallo@email.com', status: 'SUSPENDED', kycStatus: 'APPROVED', creditScore: 420, joinedAt: '2024-03-10' },
   { id: '4', firstName: 'Kone', lastName: 'Aminata', phone: '+2250304050607', email: 'kone@email.com', status: 'ACTIVE', kycStatus: 'PENDING', creditScore: 0, joinedAt: '2024-06-05' },
   { id: '5', firstName: 'Yao', lastName: 'Koffi', phone: '+2250203040506', email: 'yao@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 890, joinedAt: '2023-11-20' },
   { id: '6', firstName: 'Bamba', lastName: 'Ibrahim', phone: '+2250405060708', email: 'bamba@email.com', status: 'INACTIVE', kycStatus: 'REJECTED', creditScore: 310, joinedAt: '2024-04-12' },
-  { id: '7', firstName: 'Ciss\u00e9', lastName: 'Mariam', phone: '+2250607080910', email: 'cisse@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 720, joinedAt: '2024-01-28' },
+  { id: '7', firstName: 'Cissé', lastName: 'Mariam', phone: '+2250607080910', email: 'cisse@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 720, joinedAt: '2024-01-28' },
   { id: '8', firstName: 'Ouattara', lastName: 'Seydou', phone: '+2250809101112', email: 'ouattara@email.com', status: 'PENDING', kycStatus: 'PENDING', creditScore: 0, joinedAt: '2024-07-01' },
   { id: '9', firstName: 'Coulibaly', lastName: 'Awa', phone: '+2250910111213', email: 'coulibaly@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 560, joinedAt: '2024-02-14' },
-  { id: '10', firstName: 'Tour\u00e9', lastName: 'Abdoulaye', phone: '+2251011121314', email: 'toure@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 830, joinedAt: '2023-09-08' },
+  { id: '10', firstName: 'Touré', lastName: 'Abdoulaye', phone: '+2251011121314', email: 'toure@email.com', status: 'ACTIVE', kycStatus: 'APPROVED', creditScore: 830, joinedAt: '2023-09-08' },
 ];
 
 const columns: ColumnDef<Driver>[] = [
@@ -75,7 +75,7 @@ const columns: ColumnDef<Driver>[] = [
   },
   {
     accessorKey: 'phone',
-    header: 'T\u00e9l\u00e9phone',
+    header: 'Téléphone',
     cell: ({ row }) => (
       <div className="flex items-center gap-1.5 text-sm">
         <Phone className="h-3.5 w-3.5 text-muted-foreground" />
@@ -145,7 +145,7 @@ export default function DriversPage() {
     <div className="space-y-6">
       <PageHeader
         title="Conducteurs"
-        description="G\u00e9rer les conducteurs de votre flotte"
+        description="Gérer les conducteurs de votre flotte"
         actions={
           <Button>
             <UserPlus className="mr-2 h-4 w-4" />

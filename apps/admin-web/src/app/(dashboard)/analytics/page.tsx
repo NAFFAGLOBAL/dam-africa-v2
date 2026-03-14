@@ -22,18 +22,18 @@ import { formatCurrencyShort } from '@/lib/utils';
 
 const revenueData = [
   { month: 'Jan', revenue: 32000000, target: 30000000 },
-  { month: 'F\u00e9v', revenue: 35000000, target: 32000000 },
+  { month: 'Fév', revenue: 35000000, target: 32000000 },
   { month: 'Mar', revenue: 38000000, target: 34000000 },
   { month: 'Avr', revenue: 36000000, target: 36000000 },
   { month: 'Mai', revenue: 42000000, target: 38000000 },
   { month: 'Jun', revenue: 40000000, target: 40000000 },
   { month: 'Jul', revenue: 45000000, target: 42000000 },
-  { month: 'Ao\u00fb', revenue: 47850000, target: 44000000 },
+  { month: 'Aoû', revenue: 47850000, target: 44000000 },
 ];
 
 const driverGrowthData = [
   { month: 'Jan', newDrivers: 45, totalDrivers: 980 },
-  { month: 'F\u00e9v', newDrivers: 52, totalDrivers: 1032 },
+  { month: 'Fév', newDrivers: 52, totalDrivers: 1032 },
   { month: 'Mar', newDrivers: 38, totalDrivers: 1070 },
   { month: 'Avr', newDrivers: 61, totalDrivers: 1131 },
   { month: 'Mai', newDrivers: 48, totalDrivers: 1179 },
@@ -43,7 +43,7 @@ const driverGrowthData = [
 
 const fleetUtilizationData = [
   { month: 'Jan', utilization: 82 },
-  { month: 'F\u00e9v', utilization: 85 },
+  { month: 'Fév', utilization: 85 },
   { month: 'Mar', utilization: 83 },
   { month: 'Avr', utilization: 87 },
   { month: 'Mai', utilization: 89 },
@@ -55,7 +55,7 @@ const paymentMethodData = [
   { name: 'Wave', value: 42, color: '#1a56db' },
   { name: 'Orange Money', value: 28, color: '#f97316' },
   { name: 'MTN MoMo', value: 18, color: '#eab308' },
-  { name: 'Esp\u00e8ces', value: 8, color: '#10b981' },
+  { name: 'Espèces', value: 8, color: '#10b981' },
   { name: 'Virement', value: 4, color: '#8b5cf6' },
 ];
 
@@ -149,7 +149,7 @@ export default function AnalyticsPage() {
         {/* Payment Method Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">R\u00e9partition des m\u00e9thodes de paiement</CardTitle>
+            <CardTitle className="text-base">Répartition des méthodes de paiement</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[250px]">

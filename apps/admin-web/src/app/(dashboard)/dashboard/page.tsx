@@ -19,9 +19,9 @@ import {
 } from 'recharts';
 
 const paymentStatusData = [
-  { name: 'Effectu\u00e9', value: 68, color: '#10b981' },
+  { name: 'Effectué', value: 68, color: '#10b981' },
   { name: 'En attente', value: 18, color: '#f59e0b' },
-  { name: '\u00c9chou\u00e9', value: 8, color: '#ef4444' },
+  { name: 'Échoué', value: 8, color: '#ef4444' },
   { name: 'En retard', value: 6, color: '#8b5cf6' },
 ];
 
@@ -29,7 +29,7 @@ const fleetStatusData = [
   { label: 'En service', value: 78, color: 'bg-emerald-500' },
   { label: 'Disponible', value: 12, color: 'bg-blue-500' },
   { label: 'Maintenance', value: 7, color: 'bg-amber-500' },
-  { label: 'Retir\u00e9', value: 3, color: 'bg-gray-400' },
+  { label: 'Retiré', value: 3, color: 'bg-gray-400' },
 ];
 
 export default function DashboardPage() {
@@ -47,7 +47,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
         <p className="text-muted-foreground">
-          Vue d&apos;ensemble de votre flotte et activit\u00e9s
+          Vue d&apos;ensemble de votre flotte et activités
         </p>
       </div>
 
@@ -61,14 +61,14 @@ export default function DashboardPage() {
           iconColor="text-blue-500"
         />
         <StatCard
-          title="V\u00e9hicules en service"
+          title="Véhicules en service"
           value={stats?.activeVehicles?.value?.toLocaleString('fr-FR') || '892'}
           change={stats?.activeVehicles?.change ?? 8.3}
           icon={Car}
           iconColor="text-emerald-500"
         />
         <StatCard
-          title="Pr\u00eats actifs"
+          title="Prêts actifs"
           value={stats?.activeLoans?.value?.toLocaleString('fr-FR') || '324'}
           change={stats?.activeLoans?.change ?? -2.1}
           icon={CreditCard}
@@ -103,7 +103,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats?.pendingLoans ?? 12}</p>
-              <p className="text-xs text-muted-foreground">Pr\u00eats en attente</p>
+              <p className="text-xs text-muted-foreground">Prêts en attente</p>
             </div>
           </CardContent>
         </Card>
@@ -192,7 +192,7 @@ export default function DashboardPage() {
         {/* Fleet Status */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">\u00c9tat de la flotte</CardTitle>
+            <CardTitle className="text-base font-semibold">État de la flotte</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-center mb-4">

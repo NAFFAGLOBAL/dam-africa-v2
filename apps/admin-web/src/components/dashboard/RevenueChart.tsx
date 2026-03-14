@@ -21,7 +21,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-semibold">
-          Revenus et D\u00e9penses
+          Revenus et Dépenses
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -61,7 +61,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                 }}
                 formatter={(value: number, name: string) => [
                   formatCurrencyShort(value),
-                  name === 'revenue' ? 'Revenus' : 'D\u00e9penses',
+                  name === 'revenue' ? 'Revenus' : 'Dépenses',
                 ]}
               />
               <Area
@@ -90,7 +90,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-emerald-500" />
-            <span className="text-sm text-muted-foreground">D\u00e9penses</span>
+            <span className="text-sm text-muted-foreground">Dépenses</span>
           </div>
         </div>
       </CardContent>

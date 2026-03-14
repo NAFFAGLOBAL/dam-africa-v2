@@ -14,7 +14,7 @@ export const ROLES = {
 export const ROLE_LABELS: Record<string, string> = {
   SUPER_ADMIN: 'Super Admin',
   ADMIN: 'Administrateur',
-  LOAN_OFFICER: 'Agent de cr\u00e9dit',
+  LOAN_OFFICER: 'Agent de crédit',
   FINANCE: 'Finance',
   SUPPORT: 'Support',
 };
@@ -28,9 +28,9 @@ export const KYC_STATUS = {
 
 export const KYC_STATUS_LABELS: Record<string, string> = {
   PENDING: 'En attente',
-  APPROVED: 'Approuv\u00e9',
-  REJECTED: 'Rejet\u00e9',
-  EXPIRED: 'Expir\u00e9',
+  APPROVED: 'Approuvé',
+  REJECTED: 'Rejeté',
+  EXPIRED: 'Expiré',
 };
 
 export const LOAN_STATUS = {
@@ -44,11 +44,11 @@ export const LOAN_STATUS = {
 
 export const LOAN_STATUS_LABELS: Record<string, string> = {
   PENDING: 'En attente',
-  APPROVED: 'Approuv\u00e9',
-  REJECTED: 'Rejet\u00e9',
+  APPROVED: 'Approuvé',
+  REJECTED: 'Rejeté',
   ACTIVE: 'Actif',
-  COMPLETED: 'Termin\u00e9',
-  DEFAULTED: 'En d\u00e9faut',
+  COMPLETED: 'Terminé',
+  DEFAULTED: 'En défaut',
 };
 
 export const PAYMENT_STATUS = {
@@ -60,16 +60,16 @@ export const PAYMENT_STATUS = {
 
 export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   PENDING: 'En attente',
-  COMPLETED: 'Effectu\u00e9',
-  FAILED: '\u00c9chou\u00e9',
-  REFUNDED: 'Rembours\u00e9',
+  COMPLETED: 'Effectué',
+  FAILED: 'Échoué',
+  REFUNDED: 'Remboursé',
 };
 
 export const PAYMENT_METHODS = {
   WAVE: 'Wave',
   ORANGE_MONEY: 'Orange Money',
   MTN_MOMO: 'MTN MoMo',
-  CASH: 'Esp\u00e8ces',
+  CASH: 'Espèces',
   BANK_TRANSFER: 'Virement',
 } as const;
 
@@ -96,9 +96,9 @@ export const VEHICLE_STATUS = {
 
 export const VEHICLE_STATUS_LABELS: Record<string, string> = {
   AVAILABLE: 'Disponible',
-  RENTED: 'Lou\u00e9',
+  RENTED: 'Loué',
   MAINTENANCE: 'Maintenance',
-  RETIRED: 'Retir\u00e9',
+  RETIRED: 'Retiré',
 };
 
 export const CONTRACT_STATUS = {
@@ -110,8 +110,8 @@ export const CONTRACT_STATUS = {
 
 export const CONTRACT_STATUS_LABELS: Record<string, string> = {
   ACTIVE: 'Actif',
-  COMPLETED: 'Termin\u00e9',
-  TERMINATED: 'R\u00e9sili\u00e9',
+  COMPLETED: 'Terminé',
+  TERMINATED: 'Résilié',
   PENDING: 'En attente',
 };
 
@@ -123,10 +123,10 @@ export const INCIDENT_STATUS = {
 } as const;
 
 export const INCIDENT_STATUS_LABELS: Record<string, string> = {
-  REPORTED: 'Signal\u00e9',
+  REPORTED: 'Signalé',
   INVESTIGATING: 'En cours',
-  RESOLVED: 'R\u00e9solu',
-  CLOSED: 'Cl\u00f4tur\u00e9',
+  RESOLVED: 'Résolu',
+  CLOSED: 'Clôturé',
 };
 
 export const TICKET_STATUS = {
@@ -139,6 +139,6 @@ export const TICKET_STATUS = {
 export const TICKET_STATUS_LABELS: Record<string, string> = {
   OPEN: 'Ouvert',
   IN_PROGRESS: 'En cours',
-  RESOLVED: 'R\u00e9solu',
-  CLOSED: 'Ferm\u00e9',
+  RESOLVED: 'Résolu',
+  CLOSED: 'Fermé',
 };

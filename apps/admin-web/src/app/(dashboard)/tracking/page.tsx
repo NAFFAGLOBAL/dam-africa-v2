@@ -9,16 +9,16 @@ import { MapPin, Search, Car, Navigation, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const mockVehicles = [
-  { id: '1', name: 'Toyota Hilux', plate: 'AB-1234-CD', driver: 'Kouam\u00e9 Jean', status: 'moving', speed: 45, location: 'Cocody, Abidjan', lastUpdate: '2 min' },
-  { id: '2', name: 'Hyundai Tucson', plate: 'IJ-9012-KL', driver: 'Traor\u00e9 Fatou', status: 'stopped', speed: 0, location: 'Plateau, Abidjan', lastUpdate: '15 min' },
+  { id: '1', name: 'Toyota Hilux', plate: 'AB-1234-CD', driver: 'Kouamé Jean', status: 'moving', speed: 45, location: 'Cocody, Abidjan', lastUpdate: '2 min' },
+  { id: '2', name: 'Hyundai Tucson', plate: 'IJ-9012-KL', driver: 'Traoré Fatou', status: 'stopped', speed: 0, location: 'Plateau, Abidjan', lastUpdate: '15 min' },
   { id: '3', name: 'Nissan Patrol', plate: 'UV-1234-WX', driver: 'Yao Koffi', status: 'moving', speed: 62, location: 'Marcory, Abidjan', lastUpdate: '1 min' },
-  { id: '4', name: 'Toyota Corolla', plate: 'EF-5678-GH', driver: 'N/A', status: 'offline', speed: 0, location: 'Derni\u00e8re pos.: Yopougon', lastUpdate: '3h' },
-  { id: '5', name: 'Renault Duster', plate: 'CD-9012-EF', driver: 'Kone Aminata', status: 'moving', speed: 28, location: 'Adjam\u00e9, Abidjan', lastUpdate: '30 sec' },
+  { id: '4', name: 'Toyota Corolla', plate: 'EF-5678-GH', driver: 'N/A', status: 'offline', speed: 0, location: 'Dernière pos.: Yopougon', lastUpdate: '3h' },
+  { id: '5', name: 'Renault Duster', plate: 'CD-9012-EF', driver: 'Kone Aminata', status: 'moving', speed: 28, location: 'Adjamé, Abidjan', lastUpdate: '30 sec' },
 ];
 
 const statusColors: Record<string, { color: string; label: string }> = {
   moving: { color: 'bg-emerald-500', label: 'En mouvement' },
-  stopped: { color: 'bg-amber-500', label: 'Arr\u00eat\u00e9' },
+  stopped: { color: 'bg-amber-500', label: 'Arrêté' },
   offline: { color: 'bg-gray-400', label: 'Hors ligne' },
 };
 
@@ -27,7 +27,7 @@ export default function TrackingPage() {
     <div className="space-y-6">
       <PageHeader
         title="Suivi GPS"
-        description="Localisation en temps r\u00e9el de votre flotte"
+        description="Localisation en temps réel de votre flotte"
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -41,7 +41,7 @@ export default function TrackingPage() {
               <div className="text-center">
                 <p className="text-lg font-semibold">Carte de suivi GPS</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Int\u00e9gration Google Maps / Mapbox
+                  Intégration Google Maps / Mapbox
                 </p>
               </div>
               <div className="flex gap-4 mt-4">
@@ -60,7 +60,7 @@ export default function TrackingPage() {
         <div className="space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Rechercher un v\u00e9hicule..." className="pl-9" />
+            <Input placeholder="Rechercher un véhicule..." className="pl-9" />
           </div>
 
           <div className="space-y-2">

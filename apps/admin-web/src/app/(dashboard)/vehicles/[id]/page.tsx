@@ -26,11 +26,11 @@ const mockVehicle = {
   purchaseDate: '2023-06-15',
   purchasePrice: 18500000,
   insuranceExpiry: '2025-06-15',
-  currentDriver: { name: 'Kouam\u00e9 Jean', phone: '+2250102030405' },
+  currentDriver: { name: 'Kouamé Jean', phone: '+2250102030405' },
   maintenanceHistory: [
     { id: 'M1', type: 'Vidange', date: '2024-06-01', cost: 45000 },
     { id: 'M2', type: 'Pneus', date: '2024-03-15', cost: 180000 },
-    { id: 'M3', type: 'R\u00e9vision g\u00e9n\u00e9rale', date: '2024-01-10', cost: 120000 },
+    { id: 'M3', type: 'Révision générale', date: '2024-01-10', cost: 120000 },
   ],
 };
 
@@ -43,7 +43,7 @@ export default function VehicleDetailPage() {
       <PageHeader
         title={`${vehicle.make} ${vehicle.model}`}
         breadcrumbs={[
-          { label: 'V\u00e9hicules', href: '/vehicles' },
+          { label: 'Véhicules', href: '/vehicles' },
           { label: `${vehicle.make} ${vehicle.model}` },
         ]}
         actions={
@@ -75,7 +75,7 @@ export default function VehicleDetailPage() {
                 {[
                   { label: 'Plaque', value: vehicle.plate, icon: Car },
                   { label: 'Carburant', value: vehicle.fuelType, icon: Fuel },
-                  { label: 'Kilom\u00e9trage', value: `${vehicle.mileage.toLocaleString('fr-FR')} km`, icon: Gauge },
+                  { label: 'Kilométrage', value: `${vehicle.mileage.toLocaleString('fr-FR')} km`, icon: Gauge },
                   { label: 'Tarif journalier', value: formatCurrency(vehicle.dailyRate), icon: Calendar },
                 ].map((item) => (
                   <div key={item.label} className="space-y-1">
@@ -102,7 +102,7 @@ export default function VehicleDetailPage() {
 
       <Tabs defaultValue="details" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="details">D\u00e9tails</TabsTrigger>
+          <TabsTrigger value="details">Détails</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
         </TabsList>
 
@@ -110,7 +110,7 @@ export default function VehicleDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Sp\u00e9cifications</CardTitle>
+                <CardTitle className="text-base">Spécifications</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {[

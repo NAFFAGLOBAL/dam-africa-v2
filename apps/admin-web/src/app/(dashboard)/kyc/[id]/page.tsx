@@ -25,7 +25,7 @@ const mockKYCDetail = {
   driverName: 'Ouattara Seydou',
   driverEmail: 'ouattara@email.com',
   driverPhone: '+2250809101112',
-  documentType: 'Carte d\'identit\u00e9',
+  documentType: 'Carte d\'identité',
   documentNumber: 'CI-2024-98765',
   submittedAt: '2024-07-20',
   status: 'PENDING',
@@ -34,7 +34,7 @@ const mockKYCDetail = {
   selfieImage: '/placeholder-selfie.jpg',
   timeline: [
     { action: 'Document soumis par le conducteur', date: '2024-07-20T10:30:00Z' },
-    { action: 'En attente de v\u00e9rification', date: '2024-07-20T10:30:00Z' },
+    { action: 'En attente de vérification', date: '2024-07-20T10:30:00Z' },
   ],
 };
 
@@ -48,7 +48,7 @@ export default function KYCDetailPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="V\u00e9rification KYC"
+        title="Vérification KYC"
         breadcrumbs={[
           { label: 'KYC', href: '/kyc' },
           { label: kyc.driverName },
@@ -97,7 +97,7 @@ export default function KYCDetailPage() {
                 <span className="font-medium">{kyc.documentType}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">N\u00b0 du document</span>
+                <span className="text-muted-foreground">N° du document</span>
                 <span className="font-medium">{kyc.documentNumber}</span>
               </div>
               <div className="flex justify-between text-sm">
@@ -122,8 +122,8 @@ export default function KYCDetailPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { label: 'Recto', desc: 'Face avant du document' },
-                  { label: 'Verso', desc: 'Face arri\u00e8re du document' },
-                  { label: 'Selfie', desc: 'Photo d\'identit\u00e9' },
+                  { label: 'Verso', desc: 'Face arrière du document' },
+                  { label: 'Selfie', desc: 'Photo d\'identité' },
                 ].map((doc) => (
                   <div key={doc.label} className="space-y-2">
                     <p className="text-sm font-medium">{doc.label}</p>
@@ -166,7 +166,7 @@ export default function KYCDetailPage() {
           <DialogHeader>
             <DialogTitle>Rejeter le document KYC</DialogTitle>
             <DialogDescription>
-              Veuillez indiquer la raison du rejet. Le conducteur sera notifi\u00e9.
+              Veuillez indiquer la raison du rejet. Le conducteur sera notifié.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
@@ -174,7 +174,7 @@ export default function KYCDetailPage() {
             <Input
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Document illisible, expir\u00e9, etc."
+              placeholder="Document illisible, expiré, etc."
             />
           </div>
           <DialogFooter>

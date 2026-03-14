@@ -21,7 +21,7 @@ const actions = [
     bg: 'bg-blue-50 dark:bg-blue-950/30',
   },
   {
-    label: 'Ajouter v\u00e9hicule',
+    label: 'Ajouter véhicule',
     icon: Car,
     href: '/vehicles',
     color: 'text-emerald-500',
@@ -35,7 +35,7 @@ const actions = [
     bg: 'bg-amber-50 dark:bg-amber-950/30',
   },
   {
-    label: 'Nouveau pr\u00eat',
+    label: 'Nouveau prêt',
     icon: FileText,
     href: '/loans',
     color: 'text-purple-500',

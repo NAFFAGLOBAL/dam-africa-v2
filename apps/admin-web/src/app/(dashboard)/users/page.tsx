@@ -48,7 +48,7 @@ interface AdminUser {
 
 const mockAdminUsers: AdminUser[] = [
   { id: '1', firstName: 'Amadou', lastName: 'Diarra', email: 'amadou@damflotte.com', role: 'SUPER_ADMIN', status: 'ACTIVE', lastLogin: '2024-07-29', createdAt: '2023-01-01' },
-  { id: '2', firstName: 'Fatoumata', lastName: 'Kon\u00e9', email: 'fatoumata@damflotte.com', role: 'ADMIN', status: 'ACTIVE', lastLogin: '2024-07-28', createdAt: '2023-06-15' },
+  { id: '2', firstName: 'Fatoumata', lastName: 'Koné', email: 'fatoumata@damflotte.com', role: 'ADMIN', status: 'ACTIVE', lastLogin: '2024-07-28', createdAt: '2023-06-15' },
   { id: '3', firstName: 'Ibrahim', lastName: 'Sow', email: 'ibrahim@damflotte.com', role: 'LOAN_OFFICER', status: 'ACTIVE', lastLogin: '2024-07-29', createdAt: '2024-01-10' },
   { id: '4', firstName: 'Marie', lastName: 'Konan', email: 'marie@damflotte.com', role: 'FINANCE', status: 'ACTIVE', lastLogin: '2024-07-27', createdAt: '2024-02-20' },
   { id: '5', firstName: 'Paul', lastName: 'N\'Guessan', email: 'paul@damflotte.com', role: 'SUPPORT', status: 'SUSPENDED', lastLogin: '2024-06-15', createdAt: '2024-03-01' },
@@ -85,7 +85,7 @@ const columns: ColumnDef<AdminUser>[] = [
   },
   {
     accessorKey: 'role',
-    header: 'R\u00f4le',
+    header: 'Rôle',
     cell: ({ row }) => (
       <Badge variant={roleVariants[row.original.role] || 'outline'}>
         {ROLE_LABELS[row.original.role] || row.original.role}
@@ -99,7 +99,7 @@ const columns: ColumnDef<AdminUser>[] = [
   },
   {
     accessorKey: 'lastLogin',
-    header: 'Derni\u00e8re connexion',
+    header: 'Dernière connexion',
     cell: ({ row }) => (
       <span className="text-sm text-muted-foreground">{formatDate(row.original.lastLogin)}</span>
     ),
@@ -115,7 +115,7 @@ const columns: ColumnDef<AdminUser>[] = [
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem>Modifier</DropdownMenuItem>
-          <DropdownMenuItem>R\u00e9initialiser le mot de passe</DropdownMenuItem>
+          <DropdownMenuItem>Réinitialiser le mot de passe</DropdownMenuItem>
           <DropdownMenuItem className="text-destructive">Suspendre</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -130,7 +130,7 @@ export default function UsersPage() {
     <div className="space-y-6">
       <PageHeader
         title="Utilisateurs admin"
-        description="G\u00e9rer les comptes administrateurs"
+        description="Gérer les comptes administrateurs"
         actions={
           <Button onClick={() => setAddDialogOpen(true)}>
             <UserPlus className="mr-2 h-4 w-4" />
@@ -151,14 +151,14 @@ export default function UsersPage() {
           <DialogHeader>
             <DialogTitle>Ajouter un administrateur</DialogTitle>
             <DialogDescription>
-              Cr\u00e9er un nouveau compte administrateur
+              Créer un nouveau compte administrateur
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Pr\u00e9nom</Label>
-                <Input placeholder="Pr\u00e9nom" />
+                <Label>Prénom</Label>
+                <Input placeholder="Prénom" />
               </div>
               <div className="space-y-2">
                 <Label>Nom</Label>
@@ -170,14 +170,14 @@ export default function UsersPage() {
               <Input type="email" placeholder="email@damflotte.com" />
             </div>
             <div className="space-y-2">
-              <Label>R\u00f4le</Label>
+              <Label>Rôle</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="S\u00e9lectionner un r\u00f4le" />
+                  <SelectValue placeholder="Sélectionner un rôle" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ADMIN">Administrateur</SelectItem>
-                  <SelectItem value="LOAN_OFFICER">Agent de cr\u00e9dit</SelectItem>
+                  <SelectItem value="LOAN_OFFICER">Agent de crédit</SelectItem>
                   <SelectItem value="FINANCE">Finance</SelectItem>
                   <SelectItem value="SUPPORT">Support</SelectItem>
                 </SelectContent>
@@ -188,7 +188,7 @@ export default function UsersPage() {
             <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
               Annuler
             </Button>
-            <Button onClick={() => setAddDialogOpen(false)}>Cr\u00e9er</Button>
+            <Button onClick={() => setAddDialogOpen(false)}>Créer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

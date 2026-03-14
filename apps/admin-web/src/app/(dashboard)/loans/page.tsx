@@ -31,14 +31,14 @@ interface Loan {
 }
 
 const mockLoans: Loan[] = [
-  { id: 'L1', driverName: 'Kouam\u00e9 Jean', amount: 2500000, remainingBalance: 1800000, interestRate: 8.5, term: 12, status: 'ACTIVE', appliedAt: '2024-05-20', disbursedAt: '2024-06-01' },
-  { id: 'L2', driverName: 'Traor\u00e9 Fatou', amount: 3500000, remainingBalance: 3500000, interestRate: 9.0, term: 18, status: 'APPROVED', appliedAt: '2024-07-10' },
+  { id: 'L1', driverName: 'Kouamé Jean', amount: 2500000, remainingBalance: 1800000, interestRate: 8.5, term: 12, status: 'ACTIVE', appliedAt: '2024-05-20', disbursedAt: '2024-06-01' },
+  { id: 'L2', driverName: 'Traoré Fatou', amount: 3500000, remainingBalance: 3500000, interestRate: 9.0, term: 18, status: 'APPROVED', appliedAt: '2024-07-10' },
   { id: 'L3', driverName: 'Diallo Moussa', amount: 1500000, remainingBalance: 0, interestRate: 7.5, term: 6, status: 'COMPLETED', appliedAt: '2024-01-05', disbursedAt: '2024-01-15' },
   { id: 'L4', driverName: 'Kone Aminata', amount: 2000000, remainingBalance: 2000000, interestRate: 8.0, term: 12, status: 'PENDING', appliedAt: '2024-07-18' },
   { id: 'L5', driverName: 'Yao Koffi', amount: 5000000, remainingBalance: 4200000, interestRate: 9.5, term: 24, status: 'ACTIVE', appliedAt: '2024-03-01', disbursedAt: '2024-03-15' },
   { id: 'L6', driverName: 'Bamba Ibrahim', amount: 1000000, remainingBalance: 1000000, interestRate: 10.0, term: 6, status: 'REJECTED', appliedAt: '2024-07-05' },
   { id: 'L7', driverName: 'Coulibaly Awa', amount: 1800000, remainingBalance: 900000, interestRate: 8.0, term: 12, status: 'ACTIVE', appliedAt: '2024-02-20', disbursedAt: '2024-03-01' },
-  { id: 'L8', driverName: 'Tour\u00e9 Abdoulaye', amount: 4000000, remainingBalance: 3200000, interestRate: 8.5, term: 18, status: 'DEFAULTED', appliedAt: '2023-12-01', disbursedAt: '2023-12-15' },
+  { id: 'L8', driverName: 'Touré Abdoulaye', amount: 4000000, remainingBalance: 3200000, interestRate: 8.5, term: 18, status: 'DEFAULTED', appliedAt: '2023-12-01', disbursedAt: '2023-12-15' },
 ];
 
 const statusCounts = {
@@ -50,9 +50,9 @@ const statusCounts = {
 
 const pipelineSteps = [
   { label: 'En attente', count: statusCounts.PENDING, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/30' },
-  { label: 'Approuv\u00e9', count: statusCounts.APPROVED, icon: CheckCircle2, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/30' },
+  { label: 'Approuvé', count: statusCounts.APPROVED, icon: CheckCircle2, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/30' },
   { label: 'Actif', count: statusCounts.ACTIVE, icon: CreditCard, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
-  { label: 'Termin\u00e9', count: statusCounts.COMPLETED, icon: CheckCircle2, color: 'text-gray-500', bg: 'bg-gray-50 dark:bg-gray-950/30' },
+  { label: 'Terminé', count: statusCounts.COMPLETED, icon: CheckCircle2, color: 'text-gray-500', bg: 'bg-gray-50 dark:bg-gray-950/30' },
 ];
 
 const columns: ColumnDef<Loan>[] = [
@@ -97,7 +97,7 @@ const columns: ColumnDef<Loan>[] = [
   },
   {
     accessorKey: 'term',
-    header: 'Dur\u00e9e',
+    header: 'Durée',
     cell: ({ row }) => (
       <span className="text-sm">{row.original.term} mois</span>
     ),
@@ -128,8 +128,8 @@ export default function LoansPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Pr\u00eats"
-        description="G\u00e9rer les demandes et pr\u00eats actifs"
+        title="Prêts"
+        description="Gérer les demandes et prêts actifs"
       />
 
       {/* Pipeline */}
@@ -153,7 +153,7 @@ export default function LoansPage() {
         columns={columns}
         data={filteredLoans}
         searchKey="driverName"
-        searchPlaceholder="Rechercher un pr\u00eat..."
+        searchPlaceholder="Rechercher un prêt..."
         onRowClick={(loan) => router.push(`/loans/${loan.id}`)}
         toolbar={
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -163,11 +163,11 @@ export default function LoansPage() {
             <SelectContent>
               <SelectItem value="all">Tous</SelectItem>
               <SelectItem value="PENDING">En attente</SelectItem>
-              <SelectItem value="APPROVED">Approuv\u00e9</SelectItem>
+              <SelectItem value="APPROVED">Approuvé</SelectItem>
               <SelectItem value="ACTIVE">Actif</SelectItem>
-              <SelectItem value="COMPLETED">Termin\u00e9</SelectItem>
-              <SelectItem value="REJECTED">Rejet\u00e9</SelectItem>
-              <SelectItem value="DEFAULTED">En d\u00e9faut</SelectItem>
+              <SelectItem value="COMPLETED">Terminé</SelectItem>
+              <SelectItem value="REJECTED">Rejeté</SelectItem>
+              <SelectItem value="DEFAULTED">En défaut</SelectItem>
             </SelectContent>
           </Select>
         }

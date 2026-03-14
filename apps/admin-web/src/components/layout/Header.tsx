@@ -43,7 +43,7 @@ export function Header() {
       <div className="relative flex-1 max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Rechercher conducteurs, v\u00e9hicules, pr\u00eats..."
+          placeholder="Rechercher conducteurs, véhicules, prêts..."
           className="pl-9 bg-muted/50 border-transparent focus:bg-background focus:border-input"
         />
       </div>

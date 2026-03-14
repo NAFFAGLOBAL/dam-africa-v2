@@ -30,9 +30,9 @@ interface Ticket {
 }
 
 const mockTickets: Ticket[] = [
-  { id: 'T1', subject: 'Probl\u00e8me de paiement Wave', driverName: 'Kouam\u00e9 Jean', category: 'Paiement', priority: 'Haute', status: 'OPEN', createdAt: '2024-07-28', lastReply: '2024-07-29', messages: 3 },
-  { id: 'T2', subject: 'Demande de changement de v\u00e9hicule', driverName: 'Traor\u00e9 Fatou', category: 'V\u00e9hicule', priority: 'Moyenne', status: 'IN_PROGRESS', createdAt: '2024-07-25', lastReply: '2024-07-27', messages: 5 },
-  { id: 'T3', subject: 'Mise \u00e0 jour documents KYC', driverName: 'Diallo Moussa', category: 'KYC', priority: 'Basse', status: 'RESOLVED', createdAt: '2024-07-20', lastReply: '2024-07-22', messages: 2 },
+  { id: 'T1', subject: 'Problème de paiement Wave', driverName: 'Kouamé Jean', category: 'Paiement', priority: 'Haute', status: 'OPEN', createdAt: '2024-07-28', lastReply: '2024-07-29', messages: 3 },
+  { id: 'T2', subject: 'Demande de changement de véhicule', driverName: 'Traoré Fatou', category: 'Véhicule', priority: 'Moyenne', status: 'IN_PROGRESS', createdAt: '2024-07-25', lastReply: '2024-07-27', messages: 5 },
+  { id: 'T3', subject: 'Mise à jour documents KYC', driverName: 'Diallo Moussa', category: 'KYC', priority: 'Basse', status: 'RESOLVED', createdAt: '2024-07-20', lastReply: '2024-07-22', messages: 2 },
   { id: 'T4', subject: 'Application mobile ne fonctionne pas', driverName: 'Yao Koffi', category: 'Technique', priority: 'Haute', status: 'OPEN', createdAt: '2024-07-29', lastReply: '2024-07-29', messages: 1 },
   { id: 'T5', subject: 'Question sur le contrat', driverName: 'Kone Aminata', category: 'Contrat', priority: 'Moyenne', status: 'CLOSED', createdAt: '2024-07-15', lastReply: '2024-07-18', messages: 4 },
 ];
@@ -46,8 +46,8 @@ const priorityColors: Record<string, string> = {
 const summaryCards = [
   { label: 'Ouverts', count: 2, icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/30' },
   { label: 'En cours', count: 1, icon: Clock, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/30' },
-  { label: 'R\u00e9solus', count: 1, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
-  { label: 'Ferm\u00e9s', count: 1, icon: MessageCircle, color: 'text-gray-500', bg: 'bg-gray-50 dark:bg-gray-950/30' },
+  { label: 'Résolus', count: 1, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
+  { label: 'Fermés', count: 1, icon: MessageCircle, color: 'text-gray-500', bg: 'bg-gray-50 dark:bg-gray-950/30' },
 ];
 
 const columns: ColumnDef<Ticket>[] = [
@@ -77,11 +77,11 @@ const columns: ColumnDef<Ticket>[] = [
   },
   {
     accessorKey: 'category',
-    header: 'Cat\u00e9gorie',
+    header: 'Catégorie',
   },
   {
     accessorKey: 'priority',
-    header: 'Priorit\u00e9',
+    header: 'Priorité',
     cell: ({ row }) => (
       <span
         className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -104,7 +104,7 @@ const columns: ColumnDef<Ticket>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: 'Cr\u00e9\u00e9 le',
+    header: 'Créé le',
     cell: ({ row }) => (
       <span className="text-sm">{formatDate(row.original.createdAt)}</span>
     ),
@@ -128,7 +128,7 @@ export default function SupportPage() {
     <div className="space-y-6">
       <PageHeader
         title="Support"
-        description="G\u00e9rer les tickets de support conducteurs"
+        description="Gérer les tickets de support conducteurs"
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -161,8 +161,8 @@ export default function SupportPage() {
               <SelectItem value="all">Tous</SelectItem>
               <SelectItem value="OPEN">Ouvert</SelectItem>
               <SelectItem value="IN_PROGRESS">En cours</SelectItem>
-              <SelectItem value="RESOLVED">R\u00e9solu</SelectItem>
-              <SelectItem value="CLOSED">Ferm\u00e9</SelectItem>
+              <SelectItem value="RESOLVED">Résolu</SelectItem>
+              <SelectItem value="CLOSED">Fermé</SelectItem>
             </SelectContent>
           </Select>
         }

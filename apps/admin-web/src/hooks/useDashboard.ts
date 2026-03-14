@@ -17,8 +17,8 @@ const mockStats = {
 
 const mockRevenueChart = Array.from({ length: 12 }, (_, i) => {
   const months = [
-    'Jan', 'F\u00e9v', 'Mar', 'Avr', 'Mai', 'Jun',
-    'Jul', 'Ao\u00fb', 'Sep', 'Oct', 'Nov', 'D\u00e9c',
+    'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun',
+    'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc',
   ];
   return {
     month: months[i],
@@ -31,31 +31,31 @@ const mockRecentActivity = [
   {
     id: '1',
     type: 'kyc_submitted',
-    message: 'Kouam\u00e9 Jean a soumis ses documents KYC',
+    message: 'Kouamé Jean a soumis ses documents KYC',
     timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
   },
   {
     id: '2',
     type: 'payment_received',
-    message: 'Paiement de 250 000 FCFA re\u00e7u de Traor\u00e9 Fatou',
+    message: 'Paiement de 250 000 FCFA reçu de Traoré Fatou',
     timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
   },
   {
     id: '3',
     type: 'loan_approved',
-    message: 'Pr\u00eat de 3 500 000 FCFA approuv\u00e9 pour Diallo Moussa',
+    message: 'Prêt de 3 500 000 FCFA approuvé pour Diallo Moussa',
     timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
   },
   {
     id: '4',
     type: 'vehicle_maintenance',
-    message: 'Toyota Hilux AB-1234-CD plac\u00e9 en maintenance',
+    message: 'Toyota Hilux AB-1234-CD placé en maintenance',
     timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
   },
   {
     id: '5',
     type: 'driver_activated',
-    message: 'Conducteur Yao Koffi activ\u00e9 apr\u00e8s v\u00e9rification KYC',
+    message: 'Conducteur Yao Koffi activé après vérification KYC',
     timestamp: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
   },
 ];

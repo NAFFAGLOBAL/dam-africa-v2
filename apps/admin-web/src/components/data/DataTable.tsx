@@ -127,7 +127,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  <span className="text-muted-foreground">Aucun r\u00e9sultat trouv\u00e9</span>
+                  <span className="text-muted-foreground">Aucun résultat trouvé</span>
                 </TableCell>
               </TableRow>
             )}
@@ -138,7 +138,7 @@ export function DataTable<TData, TValue>({
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} r\u00e9sultat(s)
+          {table.getFilteredRowModel().rows.length} résultat(s)
         </p>
         <div className="flex items-center gap-2">
           <Button

@@ -29,13 +29,13 @@ interface KYCSubmission {
 }
 
 const mockKYC: KYCSubmission[] = [
-  { id: '1', driverName: 'Ouattara Seydou', documentType: 'Carte d\'identit\u00e9', submittedAt: '2024-07-20', status: 'PENDING' },
+  { id: '1', driverName: 'Ouattara Seydou', documentType: 'Carte d\'identité', submittedAt: '2024-07-20', status: 'PENDING' },
   { id: '2', driverName: 'Kone Aminata', documentType: 'Permis de conduire', submittedAt: '2024-07-19', status: 'PENDING' },
   { id: '3', driverName: 'Diarra Mamadou', documentType: 'Justificatif de domicile', submittedAt: '2024-07-18', status: 'PENDING' },
-  { id: '4', driverName: 'Kouam\u00e9 Jean', documentType: 'Carte d\'identit\u00e9', submittedAt: '2024-06-15', status: 'APPROVED', reviewedAt: '2024-06-16', reviewedBy: 'Admin' },
-  { id: '5', driverName: 'Traor\u00e9 Fatou', documentType: 'Permis de conduire', submittedAt: '2024-06-10', status: 'APPROVED', reviewedAt: '2024-06-11', reviewedBy: 'Admin' },
-  { id: '6', driverName: 'Bamba Ibrahim', documentType: 'Photo d\'identit\u00e9', submittedAt: '2024-06-08', status: 'REJECTED', reviewedAt: '2024-06-09', reviewedBy: 'Admin' },
-  { id: '7', driverName: 'N\'Guessan Paul', documentType: 'Carte d\'identit\u00e9', submittedAt: '2024-07-21', status: 'PENDING' },
+  { id: '4', driverName: 'Kouamé Jean', documentType: 'Carte d\'identité', submittedAt: '2024-06-15', status: 'APPROVED', reviewedAt: '2024-06-16', reviewedBy: 'Admin' },
+  { id: '5', driverName: 'Traoré Fatou', documentType: 'Permis de conduire', submittedAt: '2024-06-10', status: 'APPROVED', reviewedAt: '2024-06-11', reviewedBy: 'Admin' },
+  { id: '6', driverName: 'Bamba Ibrahim', documentType: 'Photo d\'identité', submittedAt: '2024-06-08', status: 'REJECTED', reviewedAt: '2024-06-09', reviewedBy: 'Admin' },
+  { id: '7', driverName: 'N\'Guessan Paul', documentType: 'Carte d\'identité', submittedAt: '2024-07-21', status: 'PENDING' },
   { id: '8', driverName: 'Soro Lacina', documentType: 'Permis de conduire', submittedAt: '2024-07-17', status: 'EXPIRED' },
 ];
 
@@ -93,8 +93,8 @@ export default function KYCPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="V\u00e9rification KYC"
-        description={`${pendingCount} document(s) en attente de v\u00e9rification`}
+        title="Vérification KYC"
+        description={`${pendingCount} document(s) en attente de vérification`}
       />
 
       <DataTable
@@ -111,9 +111,9 @@ export default function KYCPage() {
             <SelectContent>
               <SelectItem value="all">Tous</SelectItem>
               <SelectItem value="PENDING">En attente</SelectItem>
-              <SelectItem value="APPROVED">Approuv\u00e9</SelectItem>
-              <SelectItem value="REJECTED">Rejet\u00e9</SelectItem>
-              <SelectItem value="EXPIRED">Expir\u00e9</SelectItem>
+              <SelectItem value="APPROVED">Approuvé</SelectItem>
+              <SelectItem value="REJECTED">Rejeté</SelectItem>
+              <SelectItem value="EXPIRED">Expiré</SelectItem>
             </SelectContent>
           </Select>
         }

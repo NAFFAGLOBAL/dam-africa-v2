@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String   @id @default(cuid())
+  clerkId          String   @unique
+  email            String   @unique
+  name             String?
+  credits          Int      @default(10)
+  plan             String   @default("free")
+  stripeCustomerId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  searches           Search[]
+  creditTransactions CreditTransaction[]
+  listJobs           ListJob[]
+}
+
+model Search {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  query     Json
+  result    Json?
+  credits   Int
+  status    String   @default("success")
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model CreditTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  amount      Int
+  type        String
+  description String
+  searchId    String?
+  stripeId    String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model ListJob {
+  id           String   @id @default(cuid())
+  userId       String
+  type         String
+  filters      Json
+  estimateData Json?
+  status       String   @default("pending")
+  recordCount  Int?
+  creditsUsed  Int?
+  downloadUrl  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model CreditPackage {
+  id            String  @id @default(cuid())
+  name          String
+  credits       Int
+  price         Float
+  stripePriceId String
+  active        Boolean @default(true)
+}

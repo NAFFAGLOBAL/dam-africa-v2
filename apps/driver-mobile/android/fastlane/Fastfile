@@ -1,0 +1,83 @@
+# Android Fastlane Configuration for DAMFlotte CLD Driver App
+# =============================================================================
+
+default_platform(:android)
+
+platform :android do
+
+  desc "Build the Android app for release (AAB)"
+  lane :build do
+    Dir.chdir("../..") do
+      sh("flutter clean")
+      sh("flutter pub get")
+      sh("flutter build appbundle --release")
+    end
+    puts "AAB built at: ../../build/app/outputs/bundle/release/app-release.aab"
+  end
+
+  desc "Build APK for direct distribution"
+  lane :build_apk do
+    Dir.chdir("../..") do
+      sh("flutter clean")
+      sh("flutter pub get")
+      sh("flutter build apk --release")
+    end
+    puts "APK built at: ../../build/app/outputs/flutter-apk/app-release.apk"
+  end
+
+  desc "Deploy to Google Play internal testing track"
+  lane :internal do
+    build
+
+    upload_to_play_store(
+      track: "internal",
+      aab: "../../build/app/outputs/bundle/release/app-release.aab",
+      release_status: "draft",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+
+    puts "Successfully uploaded to Google Play internal testing!"
+    puts "Go to Google Play Console to promote the release."
+  end
+
+  desc "Deploy to Google Play beta (closed testing)"
+  lane :beta do
+    build
+
+    upload_to_play_store(
+      track: "beta",
+      aab: "../../build/app/outputs/bundle/release/app-release.aab",
+      release_status: "draft",
+      skip_upload_metadata: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+
+    puts "Successfully uploaded to Google Play closed testing!"
+  end
+
+  desc "Deploy to Google Play production"
+  lane :release do
+    build
+
+    upload_to_play_store(
+      track: "production",
+      aab: "../../build/app/outputs/bundle/release/app-release.aab",
+      release_status: "draft",  # Set to 'completed' for immediate release
+      skip_upload_metadata: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+
+    puts "Successfully uploaded to Google Play production!"
+    puts "Go to Google Play Console to review and publish."
+  end
+
+  # Error handling
+  error do |lane, exception|
+    puts "Error in lane '#{lane}': #{exception.message}"
+  end
+
+end

@@ -1,0 +1,95 @@
+# iOS Fastlane Configuration for DAMFlotte CLD Driver App
+# =============================================================================
+
+default_platform(:ios)
+
+platform :ios do
+
+  desc "Install certificates and provisioning profiles"
+  lane :setup_signing do
+    # Use automatic code signing via Xcode
+    update_code_signing_settings(
+      use_automatic_signing: true,
+      path: "Runner.xcodeproj",
+      team_id: ENV["APPLE_TEAM_ID"] || CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+    )
+  end
+
+  desc "Build the iOS app for release"
+  lane :build do
+    # Ensure clean build
+    Dir.chdir("../..") do
+      sh("flutter clean")
+      sh("flutter pub get")
+      sh("flutter build ios --release --no-codesign")
+    end
+
+    # Build with signing
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      export_method: "app-store",
+      output_directory: "../build/ios",
+      output_name: "DAMFlotte-Driver.ipa",
+      export_options: {
+        provisioningProfiles: {
+          "ci.damflotte.driver" => "DAMFlotte Driver AppStore"
+        }
+      }
+    )
+  end
+
+  desc "Push to TestFlight for beta testing"
+  lane :beta do
+    build
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      apple_id: ENV["APPLE_APP_ID"],  # App Store Connect App ID (numeric)
+      changelog: "DAMFlotte CLD Driver App - Build by Claude Code\n" \
+                 "- Auth with JWT token management\n" \
+                 "- Dashboard with KYC status & credit score\n" \
+                 "- KYC document upload & verification\n" \
+                 "- Loan management & applications\n" \
+                 "- Payment via Wave, Mobile Money, bank transfer\n" \
+                 "- Profile management"
+    )
+
+    puts "Successfully uploaded to TestFlight!"
+    puts "Check App Store Connect for build processing status."
+  end
+
+  desc "Push to App Store for production release"
+  lane :release do
+    build
+
+    upload_to_app_store(
+      force: true,
+      skip_metadata: false,
+      skip_screenshots: true,
+      submit_for_review: false,
+      automatic_release: false,
+      submission_information: {
+        add_id_info_uses_idfa: false
+      },
+      app_version: "1.0.0",
+      metadata_path: "./fastlane/metadata"
+    )
+
+    puts "Successfully uploaded to App Store!"
+    puts "Go to App Store Connect to submit for review."
+  end
+
+  desc "Take screenshots for App Store"
+  lane :screenshots do
+    # Placeholder for screenshot automation
+    puts "Screenshot automation not yet configured."
+    puts "Manually add screenshots to fastlane/screenshots/"
+  end
+
+  # Error handling
+  error do |lane, exception|
+    puts "Error in lane '#{lane}': #{exception.message}"
+  end
+
+end

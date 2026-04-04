@@ -1,0 +1,8 @@
+Version 1.0.0 - Lancement initial
+
+- Authentification securisee avec gestion automatique des tokens
+- Tableau de bord avec vue d'ensemble complete
+- Verification KYC avec upload de documents
+- Gestion des prets et demandes
+- Paiements via Wave, Mobile Money et virement bancaire
+- Gestion du profil chauffeur

@@ -1,0 +1,21 @@
+DAMFlotte CLD est l'application mobile officielle pour les chauffeurs en Cote d'Ivoire. Gerez vos prets, suivez vos paiements et completez votre verification KYC en toute simplicite.
+
+<b>FONCTIONNALITES PRINCIPALES:</b>
+
+<b>Tableau de bord</b> - Vue d'ensemble avec statut KYC, score de credit, prets actifs et paiements recents
+
+<b>Verification KYC</b> - Telechargez vos documents d'identite, permis de conduire, justificatif de domicile et selfie pour la verification
+
+<b>Gestion des prets</b> - Verifiez votre eligibilite, soumettez des demandes de pret, suivez votre echeancier de remboursement
+
+<b>Paiements</b> - Payez via Wave, Mobile Money ou virement bancaire. Consultez votre historique de paiements
+
+<b>Profil</b> - Gerez votre profil, modifiez votre mot de passe, suivez votre statut de verification
+
+<b>SECURITE:</b>
+- Authentification securisee avec tokens JWT
+- Stockage securise des donnees sensibles
+- Rafraichissement automatique des sessions
+
+Devise: FCFA (XOF)
+Langue: Francais

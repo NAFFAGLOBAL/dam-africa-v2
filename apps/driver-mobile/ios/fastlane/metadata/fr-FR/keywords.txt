@@ -1,0 +1,1 @@
+chauffeur,pret,credit,flotte,transport,paiement,KYC,verification,Abidjan,FCFA

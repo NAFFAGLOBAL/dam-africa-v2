@@ -1,0 +1,52 @@
+# Flutter
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/local.properties
+android/keystore/*.jks
+android/keystore/*.keystore
+android/key.properties
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/App.framework
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Fastlane
+ios/fastlane/report.xml
+ios/fastlane/Preview.html
+ios/fastlane/screenshots/
+ios/fastlane/test_output/
+android/fastlane/report.xml
+android/fastlane/play-store-key.json
+
+# Secrets
+*.jks
+*.keystore
+play-store-key.json
+AuthKey_*.p8
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Gemfile
+Gemfile.lock
+
+# OS
+.DS_Store

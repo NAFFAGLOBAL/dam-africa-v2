@@ -1,0 +1,5 @@
+# Android Google Play Store Configuration
+# Update these values with your actual Google Play account info
+
+json_key_file("fastlane/play-store-key.json")  # Path to Google Play service account JSON
+package_name("ci.damflotte.driver")             # Application package name

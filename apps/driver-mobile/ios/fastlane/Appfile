@@ -1,0 +1,11 @@
+# iOS App Store Configuration
+# Update these values with your actual Apple Developer account info
+
+app_identifier("ci.damflotte.driver")  # Bundle ID
+apple_id("your-apple-id@email.com")   # Your Apple Developer email
+itc_team_id("YOUR_ITC_TEAM_ID")       # App Store Connect Team ID
+team_id("YOUR_TEAM_ID")               # Apple Developer Portal Team ID
+
+# To find your team IDs, run:
+#   fastlane produce --skip_itc
+# Or check App Store Connect > Users and Access
